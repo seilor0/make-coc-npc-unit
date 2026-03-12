@@ -95,7 +95,6 @@ const rootApp = createApp({
         .filter(dic => dic.value)
         .map(dic => dic.label)
         .forEach(chatTarget => {
-
           // 差分
           if (chatTarget == '差分') {
             if (!setting.value.faces?.length) return;
@@ -158,13 +157,13 @@ const rootApp = createApp({
             case 'line':
               return dic.value;
             case 'dice':
-              return `${dic.value}${name}`;
             case 'choice':
               return `${dic.value}${name}`;
             case 'elseRoll':
-              if      (setting.value.dice=='CC')  dic.value = dic.value.replace(/(CBR|RES)B/i,'$1');
-              else if (setting.value.dice=='CCB') dic.value = dic.value.replace(/(CBR|RES)([^B])/i,'$1B$2');
-              return `${dic.value}${name}`;
+              let value = dic.value;
+              if      (setting.value.dice=='CC')  value = value.replace(/(CBR|RES)B/i,'$1');
+              else if (setting.value.dice=='CCB') value = value.replace(/(CBR|RES)([^B])/i,'$1B$2');
+              return `${value}${name}`;
             case 'roll':
               if (setting.value.rollStyle=='@') return `${setting.value.dice}${name} @${dic.value}`;
               else return `${setting.value.dice}<=${dic.value}${name}`;
@@ -304,13 +303,12 @@ const rootApp = createApp({
           const choice = base.match(/choice\d*(?:\[.+\]|\(.+\)| .+)/i)?.[0];
           if (!choice) return;
           dic.type = 'choice';
-          dic.name = base.replace(choice, '');
+          dic.name = base.replace(choice, '').trim();
           dic.value = choice;
 
         } else if (base.indexOf('チョイス') > -1) {
-          const arr = base.match(/チョイス(\d*) *(.+)/i);
-          if (!arr) return;
-          const [choice, cTimes, option] = arr.slice(0, 3);
+          const {choice, cTimes, option} = base.match(/(?<choice>チョイス(?<cTimes>\d*) *(?<option>.+))/i)?.groups || {choice:'', cTimes:null, option:null};
+          if (!choice) return;
           const value = `choice${cTimes}[${option.split(/[,、， ]/).filter(Boolean).join(',')}]`;
           dic.type = 'choice';
           dic.name = base.replace(choice, '').trim();
@@ -318,36 +316,39 @@ const rootApp = createApp({
 
           // 組み合わせロール
         } else if (/CBR/i.test(base)) {
-          const [value, value1, value2] = base.match(/CBRB?\D*(\d+)\D+(\d+)\)?/i).slice(0, 3);
+          const {val, val1, val2} = base.match(/(?<val>CBRB?\D*(?<val1>\d+)\D+(?<val2>\d+)\)?)/i)?.groups || {val:'', val1:null, val2:null};
+          if (!val1 || !val2) return;
           dic.type = 'elseRoll';
-          dic.name = base.replace(value, '');
-          dic.value = `CBR(${value1},${value2})`;
-
+          dic.name = base.replace(val, '');
+          dic.value = `CBR(${val1},${val2})`;
+          
           // 対抗ロール
         } else if (/RES/i.test(base)) {
-          const [value, value1, value2] = base.match(/RESB?\D*(\d+)\D+(\d+)\)?/i).slice(0, 3);
+          const {val, val1, val2} = base.match(/(?<val>RESB?\D*(?<val1>\d+)\D+(?<val2>\d+)\)?)/i)?.groups || {val:'', val1:null, val2:null};
+          if (!val1 || !val2) return;
           dic.type = 'elseRoll';
-          dic.name = base.replace(value, '');
-          dic.value - `RES(${value1}-${value2})`;
+          dic.name = base.replace(val, '');
+          dic.value = `RES(${val1}-${val2})`;
 
           // CCB<=70 skill
         } else if (/(?:1d100|CCB?)<=/i.test(base)) {
-          const arr = base.match(new RegExp(`<=(${dicePattern}) *(.*)`, 'i'));
+          const {value, name} = base.match(new RegExp(`<=(?<value>${dicePattern}) *(?<name>.*)`, 'i'))?.groups || {value:null, name:''};
+          if(!value) return;
           dic.type = 'roll';
-          dic.name = arr[2];
-          dic.value = arr[1];
+          dic.name = name;
+          dic.value = value;
 
           // CCB skill @70
         } else if (/(?:1d100|CCB?).*@\d+$/i.test(base)) {
-          const arr = base.match(/(?:1d100|CCB?) *(.*) *@(\d+)$/i);
+          const {name, value} = base.match(/(?:1d100|CCB?) *(?<name>.*) *@(?<value>\d+)$/i)?.groups || {name:'', value:null};
           dic.type = 'roll';
-          dic.name = arr[1];
-          dic.value = arr[2];
+          dic.name = name;
+          dic.value = value;
 
           // 1d3
         } else if (/\dD\d/i.test(base)) {
           let value = base.match(new RegExp(dicePattern, 'i'))[0];
-          const name = base.replace(value, '');
+          const name = base.replace(value, '').trim();
           value = value.replace(/\/1$/i, '').replace(/\{?db\}?/gi, '{DB}');
           dic.type = 'dice';
           dic.name = name;
@@ -355,14 +356,14 @@ const rootApp = createApp({
 
           // skill 70
         } else {
-          const arr = base.match(new RegExp(`(.*?)(${dicePattern})\\D*$`, 'i'));
-          if (!arr) {
+          const {name, value} = base.match(new RegExp(`(?<name>.*?)(?<value>${dicePattern})\\D*$`, 'i'))?.groups || {name:'', value:null};
+          if (!value) {
             console.log(`Not add to chat-palette : ${base}`);
             return;
           }
           dic.type = 'roll';
-          dic.name = arr[1];
-          dic.value = arr[2];
+          dic.name = name;
+          dic.value = value;
         }
 
         dic.name = [['(', '（'], [')', '）'], [':','：']].reduce((acc, cur) => acc.replaceAll(cur[0], cur[1]), dic.name);
