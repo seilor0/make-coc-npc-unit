@@ -198,7 +198,7 @@ const rootApp = createApp({
       const text = [
         [/　/g, ' '],
         [/\n/g, ''],
-        [/[！-｝]/g, function (s) { return String.fromCharCode(s.charCodeAt(0) - 0xFEE0); }]
+        [/[！-｝]/g, (s)=>String.fromCharCode(s.charCodeAt(0)-0xFEE0)]
       ].reduce((acc, cur) => acc.replaceAll(cur[0], cur[1]), document.getElementById('stats').value);
 
       // 能力値
@@ -270,7 +270,7 @@ const rootApp = createApp({
 
       const baseArr = [
         [/　/g, ' '],
-        [/[！-｝]/g, function (s) { return String.fromCharCode(s.charCodeAt(0) - 0xFEE0); }],
+        [/[！-｝]/g, (s)=>String.fromCharCode(s.charCodeAt(0)-0xFEE0)],
         [new RegExp(`[${setting.value.delChar}]`, 'g'), ''],
         [/_/g, ' '],
       ]
