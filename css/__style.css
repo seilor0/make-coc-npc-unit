@@ -6,7 +6,7 @@
 :root {
   --accent : seagreen;
   --basic-font : 'Quicksand','Zen Kaku Gothic New';
-  accent-color : var(--accent);
+  /* accent-color : var(--accent); */
 }
 
 .material-symbols-outlined {
@@ -41,6 +41,284 @@
 }
 
 
+
+/* ---------------------- */
+/*       base, reset      */
+/* ---------------------- */
+@layer base {  
+  #root {
+    /* background-color: #fafafa; */
+    /* min-height: 100dvh; */
+    /* display: grid; */
+    /* grid-template-rows:1fr auto; */
+    overflow: auto;
+  }
+
+  main {
+    padding: 2.5rem;
+    padding-block-end: 1.5rem;
+    /* display: flex; */
+    gap: 2rem;
+    justify-content: center;
+  
+    @media (max-width:600px) {
+      padding: 1.5rem 1rem;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+  }
+
+  aside {
+    align-self: start;
+    white-space: nowrap;
+    max-width: min-content;
+    user-select: none;
+    margin-inline-end: 3.5rem;
+    @media (max-width:600px) {
+      max-width: initial;
+      align-self: center;
+      margin-inline-end: 0;
+    }
+  }
+}
+
+@layer base {
+  h1 {
+    font-size: 2rem;
+    padding-inline-start: 1rem;
+    margin-block: 0 1rem;
+    border-inline-start: 0.25rem solid var(--accent);
+    line-height: 1.2;
+    letter-spacing: 2px;
+  }
+  
+  h2 {
+    margin-block-start: 0;
+    user-select: none;
+    @media (max-width:600px) {margin-block-end: 0;}
+  }
+  
+  hgroup {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+  }
+  
+  p {
+    margin-block: 0;
+    font-weight: 500;
+  }
+  
+  pre {
+    font-family: var(--basic-font);
+    margin-block: 0.5rem;
+  }
+  
+  textarea {
+    font-family: 'Zen Kaku Gothic New';
+    resize: vertical;
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+    min-height: 1rem;
+    field-sizing: content;
+    box-sizing: border-box;
+    width: stretch;
+  
+    details[name='aside'] & {
+      margin-block-end: 0.5rem;
+      min-height: 4rem;
+      overflow-wrap: anywhere;
+    }
+  }
+  
+  select {
+    color: #444;
+    background-color: #fff;
+    border: 1px solid #aaa;
+    border-radius: 0.25rem;
+    height: 1.5rem;
+    width: stretch;
+    cursor: pointer;
+  }
+  
+  button {
+    font-family: var(--basic-font);
+  }
+  
+  hr {margin-block: 1.5rem;}
+
+  input[type="text"] {
+    border: 1px solid gray;
+    border-radius: 3px;
+    padding:0.25rem 0.5rem;
+  }
+  
+  input[type="range"] {
+    margin: 0;
+    margin-inline-start: -2px;
+  }
+  
+  input[type="number"] {
+    width: 5ch;
+    background-color: transparent;
+    padding: 0.25rem;
+    border: 1px solid gray;
+    border-radius: 0.25rem;
+  }
+  
+  input[type="color"] {
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 1px solid gray;
+    border-radius: 3px;
+  
+    &::-webkit-color-swatch,
+    &::-webkit-color-swatch-wrapper {
+      border: none;
+      padding: 0;
+    }
+  }
+
+  :is(main,dialog) li::marker{
+    color: seagreen;
+    font-weight: 600;
+  }
+  
+  .basic-dialog {
+    --radius: 7px;
+    background-color: #fafafa;
+    border-color: darkgray;
+    box-shadow: 0px 2px 17px 1px rgb(0 0 0 / 19%);
+  
+    header {
+      background-color: hsl(0, 0%, 93%);
+      padding: 0.5rem 0.75rem;
+  
+      h2 {
+        color: #444;
+        font-size: large;
+      }
+    }
+  
+    section {
+      padding: 0.75rem;
+    }
+
+    p {
+      font-weight: 400;
+    }
+
+    ul {
+      margin-block: 0;
+      padding-inline-start: 2ch;
+    }
+  }
+  
+  main table {
+    border-spacing: 0 0.25rem;
+    font-size: small;
+    letter-spacing: 0.5px;
+    
+    caption {
+      text-align: left;
+      font-size: calc(1rem - 1px);
+      font-weight: 500;
+      margin-block-end: 0.25rem;
+      user-select: none;
+    }
+  
+    tr {height: 1.5rem;}
+  
+    th,td {
+      font-weight: 500;
+      padding: 0.25rem;
+      &:has(input[type="text"],input[type="number"]) {padding:0;}
+    }
+  
+    :is(th,td) input:is([type="text"],[type="number"]) {
+      background-color: transparent;
+      width: inherit;
+      padding: 0.25rem;
+      border-width: 0;
+    }
+  
+    thead th {
+      color:white;
+      background-color: lightsalmon;
+      user-select: none;
+      &:first-child{ border-start-start-radius: 0.25rem; }
+      &:last-child { border-start-end-radius:   0.25rem; }
+    }
+  
+    tbody {
+      tr:nth-of-type(even) :is(th,td) { background-color: #eee; }
+      th,td { border-block-end: 1px solid darkgray; }
+      th    { border-inline-end: 3px dotted rgba(0,0,0,0.15); }
+      
+      input[type='checkbox'] {
+        margin: 0;
+        margin-block-start: 0.25rem;
+        width: 1rem;
+        height: 1rem;
+      }
+    }
+    &:not(:has(thead)) tr:first-child > * { border-block-start: 1px solid darkgray; }
+  }
+  
+  caption button {margin-inline-start: 4px;}
+}
+
+
+/* -------------------- */
+/*  imported component  */
+/* -------------------- */
+/* layout */
+@layer project {
+  .l-basic-footer {
+    color: gray;
+    background-color: #eee;
+  }
+  .l-basic-footer__content {
+    border-block-end: 1px solid #aaa;
+    @media(max-width: 600px) {
+      border-block-end: none;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+  }
+}
+
+/* component */
+@layer project {
+  .icon-frame {
+    padding: 0.5rem;
+    border: 1px solid darkgray;
+    border-radius: 3px;
+    caption & {padding: 0.25rem;}
+  }
+  
+  .icon {
+    --size: 0.75rem;
+    --line-radius: 1px;
+    color: darkgray;
+  }
+  
+  .toggle-button {
+    --radius: calc(0.5rem - 1px);
+    --padding: 2px;
+    gap: 0.5rem;
+    font-weight: 500;
+    .checked     {color: var(--accent);}
+    .not-checked {color: rgb(0 0 0 / 0.4);}
+  }
+}
+
+
+/* -------------------- */
+/*  project component   */
+/* -------------------- */
 @layer component {
   button.export {
     --size: 6rem;
@@ -272,21 +550,6 @@
     }
   }
 
-  .footer-content {
-    width: max-content;
-    padding-block-end: 0.75rem;
-    border-block-end: 1px solid #aaa;
-    display: flex;
-    justify-self: center;
-    gap:3rem;
-  
-    @media(max-width: 600px) {
-      border-block-end: none;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-  }
-
   #modal-useful section {
     padding: 1.5rem;
     display: flex;
@@ -294,334 +557,6 @@
     font-size:calc(1rem - 2px);
     @media(max-width: 600px) {
       flex-direction: column;
-    }
-  }
-}
-
-
-/* --------------------- */
-/*     自作エレメント     */
-@layer base {
-  .icon-frame {
-    padding: 0.5rem;
-    border: 1px solid darkgray;
-    border-radius: 3px;
-    caption & {padding: 0.25rem;}
-  }
-  
-  .icon {
-    --size: 0.75rem;
-    --line-radius: 1px;
-    color: darkgray;
-  }
-  
-  .toggle-button {
-    --radius: calc(0.5rem - 1px);
-    --padding: 2px;
-    --color: var(--accent);
-    gap: 0.5rem;
-    font-weight: 500;
-    .checked     {color: var(--accent);}
-    .not-checked {color: rgb(0 0 0 / 0.4);}
-  }
-}
-/* --------------------- */
-
-
-@layer base {
-  body {
-    margin:0;
-    font-family: var(--basic-font);
-  }
-  
-  #root {
-    background-color: #fafafa;
-    min-height: 100dvh;
-    display: grid;
-    grid-template-rows:1fr auto;
-    overflow: auto;
-  }
-
-  main {
-    padding: 2.5rem;
-    padding-block-end: 1.5rem;
-    display: flex;
-    gap: 2rem;
-    justify-content: center;
-  
-    @media (max-width:600px) {
-      padding: 1.5rem 1rem;
-      flex-direction: column;
-      align-items: center;
-      gap: 1rem;
-    }
-  }
-
-  aside {
-    align-self: start;
-    white-space: nowrap;
-    max-width: min-content;
-    user-select: none;
-    margin-inline-end: 3.5rem;
-    @media (max-width:600px) {
-      max-width: initial;
-      align-self: center;
-      margin-inline-end: 0;
-    }
-  }
-
-  h1 {
-    font-size: 2rem;
-    padding-inline-start: 1rem;
-    margin-block: 0 1rem;
-    border-inline-start: 0.25rem solid var(--accent);
-    line-height: 1.2;
-    letter-spacing: 2px;
-  }
-  
-  h2 {
-    margin-block-start: 0;
-    user-select: none;
-    @media (max-width:600px) {margin-block-end: 0;}
-  }
-  
-  hgroup {
-    display: flex;
-    align-items: baseline;
-    gap: 0.75rem;
-  }
-  
-  p {
-    margin-block: 0;
-    font-weight: 500;
-  }
-  
-  pre {
-    font-family: var(--basic-font);
-    margin-block: 0.5rem;
-  }
-  
-  textarea {
-    font-family: 'Zen Kaku Gothic New';
-    resize: vertical;
-    border-radius: 0.25rem;
-    padding: 0.5rem;
-    min-height: 1rem;
-    field-sizing: content;
-    box-sizing: border-box;
-    width: stretch;
-  
-    details[name='aside'] & {
-      margin-block-end: 0.5rem;
-      min-height: 4rem;
-      overflow-wrap: anywhere;
-    }
-  }
-  
-  select {
-    color: #444;
-    background-color: #fff;
-    border: 1px solid #aaa;
-    border-radius: 0.25rem;
-    height: 1.5rem;
-    width: stretch;
-    cursor: pointer;
-  }
-  
-  button {
-    font-family: var(--basic-font);
-    user-select: none;
-    cursor: pointer;
-  }
-  
-  hr {margin-block: 1.5rem;}
-
-  input[type="text"] {
-    border: 1px solid gray;
-    border-radius: 3px;
-    padding:0.25rem 0.5rem;
-  }
-  
-  input[type="range"] {
-    margin: 0;
-    margin-inline-start: -2px;
-  }
-  
-  input[type="number"] {
-    width: 5ch;
-    background-color: transparent;
-    padding: 0.25rem;
-    border: 1px solid gray;
-    border-radius: 0.25rem;
-  }
-  
-  input[type="color"] {
-    width: 2rem;
-    height: 2rem;
-    padding: 0;
-    border: 1px solid gray;
-    border-radius: 3px;
-  
-    &::-webkit-color-swatch,
-    &::-webkit-color-swatch-wrapper {
-      border: none;
-      padding: 0;
-    }
-  }
-
-  :is(main,dialog) li::marker{
-    color: seagreen;
-    font-weight: 600;
-  }
-  
-  dialog {
-    background-color: #fafafa;
-    border: 1px solid darkgray;
-    border-radius: 7px;
-    scrollbar-color: #ccc transparent;
-    box-shadow: 0px 2px 17px 1px rgb(0 0 0 / 19%);
-    overflow: hidden auto;
-    padding: 0;
-    
-    max-height: 90%;
-    min-width: 20rem;
-  
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      
-      background-color: hsl(0, 0%, 93%);
-      padding: 0.5rem 0.75rem;
-  
-      position: sticky;
-      top: 0;
-  
-      h2 {
-        color: #444;
-        font-size: large;
-        user-select: none;
-        margin: 0;
-      }
-    }
-  
-    section {
-      padding: 0.75rem;
-    }
-
-    p {
-      font-weight: 400;
-    }
-
-    ul {
-      margin-block: 0;
-      padding-inline-start: 2ch;
-    }
-  }
-  
-  main table {
-    border-spacing: 0 0.25rem;
-    font-size: small;
-    letter-spacing: 0.5px;
-    
-    caption {
-      text-align: left;
-      font-size: calc(1rem - 1px);
-      font-weight: 500;
-      margin-block-end: 0.25rem;
-      user-select: none;
-    }
-  
-    tr {height: 1.5rem;}
-  
-    th,td {
-      font-weight: 500;
-      padding: 0.25rem;
-      &:has(input[type="text"],input[type="number"]) {padding:0;}
-    }
-  
-    :is(th,td) input:is([type="text"],[type="number"]) {
-      background-color: transparent;
-      width: inherit;
-      padding: 0.25rem;
-      border-width: 0;
-    }
-  
-    thead th {
-      color:white;
-      background-color: lightsalmon;
-      user-select: none;
-      &:first-child{ border-start-start-radius: 0.25rem; }
-      &:last-child { border-start-end-radius:   0.25rem; }
-    }
-  
-    tbody {
-      tr:nth-of-type(even) :is(th,td) { background-color: #eee; }
-      th,td { border-block-end: 1px solid darkgray; }
-      th    { border-inline-end: 3px dotted rgba(0,0,0,0.15); }
-      
-      input[type='checkbox'] {
-        margin: 0;
-        margin-block-start: 0.25rem;
-        width: 1rem;
-        height: 1rem;
-      }
-    }
-    &:not(:has(thead)) tr:first-child > * { border-block-start: 1px solid darkgray; }
-  }
-  
-  caption button {margin-inline-start: 4px;}
-  
-  footer {
-    color: gray;
-    background-color: #eee;
-    font-size: 0.75rem;
-    font-weight: 400;
-    padding: 1rem 1.5rem;
-    margin:0;
-    
-    ul {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-  
-      padding-inline-start: 2.5ch;
-      margin-block: 0.5rem 0;
-  
-      @media (max-width:600px) {
-        max-width: calc(100vw - 3rem);
-        box-sizing: border-box;
-      }
-    }
-  
-    h2 {
-      font-weight: 600;
-      font-size: larger;
-      margin-block: 0.25rem;
-    }
-  
-    table {
-      border-collapse: collapse;
-      font-size: small;
-      letter-spacing: 0.5px;
-      margin-block-start: 0.5rem;
-      width: 55ch;
-      @media (max-width:600px) {width: stretch}
-  
-      tr {
-        vertical-align: baseline;
-        border-block: 1px solid #aaa;
-      }
-  
-      th,td {
-        padding: 0.25rem;
-        font-weight: unset;
-        text-align: left;
-        tbody & {padding-block-start: 0.5rem;}
-        &:first-child {width: 20%}
-        &:nth-child(2){width: 20%}
-      }
     }
   }
 }

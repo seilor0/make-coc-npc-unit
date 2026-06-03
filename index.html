@@ -10,7 +10,10 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300..700" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,200..400,0,0&icon_names=info,input,settings" />
   
-  <link rel="stylesheet" href="../__utility/css/__style.css" />
+  <link rel="stylesheet" href="./css/_base.css" />
+  <link rel="stylesheet" href="./css/basic-dialog.css" />
+  <link rel="stylesheet" href="./css/css-icon.css" />
+  <link rel="stylesheet" href="./css/toggle-button.css" />
   <link rel="stylesheet" href="./css/__style.css" />
   
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
@@ -230,9 +233,7 @@
           <div class="setting-wrapper" style="font-size: 0.9rem;column-gap: 0.75rem;height: fit-content;margin-block: 0.25rem 0;margin-inline-start: -1rem;">
             <template v-for="data in chatTargets" :key="data.id">
               <span>{{data.label}}</span>
-              <toggle-button style="--color:lightsalmon"
-                :is-checked = "data.value" @checked-toggle = "value => data.value=value"
-              ></toggle-button>
+              <toggle-button style="--color:lightsalmon" :is-checked = "data.value" @checked-toggle = "value => data.value=value"></toggle-button>
             </template>
           </div>
 
@@ -241,8 +242,8 @@
 
     </main>
 
-    <footer>
-      <div class="footer-content">
+    <footer class="l-basic-footer">
+      <div class="l-basic-footer__content">
         <div>
           <h2>CONTACT</h2>
           <span style="font-size: larger;">セイル</span>
@@ -298,7 +299,19 @@ PUBLISHED BY KADOKAWA CORPORATION 「クトゥルフ神話TRPG」「新クトゥ
       </button>
     </div>
 
-    <dialog id="modal-how2use" closedby="any">
+    <basic-dialog id="modal-how2use">
+      <template #header>このサイトについて</template>
+      <template #content>
+        <p>
+          CoC6版 / 7版のココフォリア用の<br>
+          キャラコマを作れるサイトです。<br>
+        </p>
+        <p>
+          入力の手数を極力省くことを目的に作りました。
+        </p>
+      </template>
+    </basic-dialog>
+    <!-- <dialog id="modal-how2use" closedby="any">
       <header>
         <h2>このサイトについて</h2>
         <button-css-icon icon-name="icon-close" command="close" commandfor="modal-how2use"></button-css-icon>
@@ -312,9 +325,48 @@ PUBLISHED BY KADOKAWA CORPORATION 「クトゥルフ神話TRPG」「新クトゥ
           入力の手数を極力省くことを目的に作りました。
         </p>
       </section>
-    </dialog>
+    </dialog> -->
 
-    <dialog id="modal-useful" closedby="any">
+    <basic-dialog id="modal-useful">
+      <template #header>便利機能</template>
+      <template #content>
+        <div>
+          <p class="title">並び替え</p>
+          <p style="margin-block: 0.5em;">
+            ドラッグ & ドロップで<br>
+            出力欄のリストを<br>
+            並び替えることができます
+          </p>
+          <p>対象：</p>
+          <div class="graybox">
+            <ul>
+              <li>技能</li>
+              <li>チャパレ</li>
+              <li>追加したパラメータ</li>
+              <li>追加したステータス</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <p class="title">出力 ON/OFF</p>
+          <p style="margin-block: 0.5em;">
+            対象の欄をクリックすることで<br>
+            チャパレやキャラコマに出力するか<br>
+            別個に設定できます
+          </p>
+          <p>対象：</p>
+          <div class="graybox">
+            <ul>
+              <li>パラメータ</li>
+              <li>ステータス</li>
+              <li>技能名</li>
+              <li>チャパレ</li>
+            </ul>
+          </div>
+        </div>
+      </template>
+    </basic-dialog>
+    <!-- <dialog id="modal-useful" closedby="any">
       <header>
         <h2>便利機能</h2>
         <button-css-icon icon-name="icon-close" command="close" commandfor="modal-useful"></button-css-icon>
@@ -355,9 +407,49 @@ PUBLISHED BY KADOKAWA CORPORATION 「クトゥルフ神話TRPG」「新クトゥ
           </div>
         </div>
       </section>
-    </dialog>
+    </dialog> -->
 
-    <dialog id="modal-dice-setting" closedby="any">
+    <basic-dialog id="modal-dice-setting">
+      <template #header>チャパレ設定</template>
+      <template #content>
+        <div class="setting-wrapper" style="width: 22rem;">
+          <span>システム</span>
+          <toggle-button :top-is-slider="true" :is-checked="setting.is6th" @checked-toggle="value => setting.is6th=value">
+            <template #checked>CoC6th</template>
+            <template #not-checked>CoC7th</template>
+          </toggle-button>
+
+          <span>判定ダイス</span>
+          <select v-model="setting.dice">
+            <option value="CC">CC</option>
+            <option value="CCB">CCB</option>
+            <option value="1d100">1d100</option>
+          </select>
+
+          <span>形式</span>
+          <select v-model="setting.rollStyle">
+            <option value="normal">{{setting.dice}}&lt;=70 【...】</option>
+            <option value="secret">s{{setting.dice}}&lt;=70 【...】</option>
+            <option value="@">{{setting.dice}} 【...】@70</option>
+          </select>
+
+          <span></span>
+          <div class="setting-wrapper" style="margin: 0;column-gap: 0.5rem;">
+            <span>単体ダイス</span>
+            <toggle-button :top-is-slider="true" :is-checked="setting.secretSingleDice" @checked-toggle="value => setting.secretSingleDice=value">
+              <template #checked>シークレット</template>
+              <template #not-checked>オープン</template>
+            </toggle-button>
+            <span>choice</span>
+            <toggle-button :top-is-slider="true" :is-checked="setting.secretChoice" @checked-toggle="value => setting.secretChoice=value">
+              <template #checked>シークレット</template>
+              <template #not-checked>オープン</template>              
+            </toggle-button>
+          </div>
+        </div>
+      </template>
+    </basic-dialog>
+    <!-- <dialog id="modal-dice-setting" closedby="any">
       <header>
         <h2>チャパレ設定</h2>
         <button-css-icon icon-name="icon-close" command="close" commandfor="modal-dice-setting"></button-css-icon>
@@ -394,9 +486,47 @@ PUBLISHED BY KADOKAWA CORPORATION 「クトゥルフ神話TRPG」「新クトゥ
           ></toggle-button>
         </div>
       </section>
-    </dialog>
+    </dialog> -->
 
-    <dialog id="modal-unit-setting" closedby="any">
+    <basic-dialog id="modal-unit-setting" :section-style="max-width: 22rem;">
+      <template #header>キャラコマ設定</template>
+      <template #content>
+        <div class="setting-wrapper">
+          <span>ステータス</span>
+          <toggle-button :top-is-slider="true" :is-checked="setting.secretUnit" @checked-toggle="value=>setting.secretUnit=value">
+            <template #checked>秘匿</template>
+            <template #not-checked>公開</template>
+          </toggle-button>
+          <span>発言アイコン</span>
+          <toggle-button :top-is-slider="true" :is-checked="setting.invisibleUnit" @checked-toggle="value=>setting.invisibleUnit=value">
+            <template #checked>非表示</template>
+            <template #not-checked>表示</template>
+          </toggle-button>
+          <span>コマ一覧</span>
+          <toggle-button :top-is-slider="true" :is-checked="setting.hideUnit" @checked-toggle="value=>setting.hideUnit=value">
+            <template #checked>非表示</template>
+            <template #not-checked>表示</template>
+          </toggle-button>
+        </div>
+        <hr>
+        <div class="setting-wrapper">
+          <span>発言カラー</span>
+          <div style="display: grid;grid-template-columns: auto auto 1fr;gap: 0.5rem;align-items: center;">
+            <input type="color" v-model="setting.color">
+            <input type="text" v-model="setting.color" style="background-color: transparent;height: stretch;width: 7ch;" >
+            <p class="ccfolia-name" :style="{color: setting.color}">探索者名</p>
+          </div>
+          <span>コマサイズ</span>
+          <div style="display: flex;gap: 0.5rem;">
+            <input type="range" min="1" max="30" v-model="setting.unitSize" style="flex-grow: 1">
+            <input type="number" min="1" v-model="setting.unitSize">
+          </div>
+          <span>差分<span style="font-size: smaller;"> (ラベル)</span></span>
+          <textarea :value="setting.faces?.join('\n')" @change="e => setting.faces = e.currentTarget.value.split('\n').filter(Boolean).map(row=>(row.startsWith('@')?'':'@')+row)"></textarea>
+        </div>
+      </template>
+    </basic-dialog>
+    <!-- <dialog id="modal-unit-setting" closedby="any">
       <header>
         <h2>キャラコマ設定</h2>
         <button-css-icon icon-name="icon-close" command="close" commandfor="modal-unit-setting"></button-css-icon>
@@ -436,9 +566,19 @@ PUBLISHED BY KADOKAWA CORPORATION 「クトゥルフ神話TRPG」「新クトゥ
           <textarea :value="setting.faces?.join('\n')" @change="e => setting.faces = e.currentTarget.value.split('\n').filter(Boolean).map(row=>(row.startsWith('@')?'':'@')+row)"></textarea>
         </div>
       </section>
-    </dialog>
+    </dialog> -->
 
-    <dialog id="modal-import-unit" closedby="any">
+    <basic-dialog id="modal-import-unit">
+      <template #header>ココフォリアコマをインポート</template>
+      <template #content>
+        <textarea style="width: 20rem;max-height: 20rem;min-height: 6rem;" placeholder="コマを貼り付け" @change="importUnit"></textarea>
+        <toggle-button style="display: flex;justify-content: flex-end;" :is-checked="setting.importUnitSetting" @checked-toggle="value=>setting.importUnitSetting=value">
+          <template #checked>数値 & コマ設定をインポート</template>
+          <template #not-checked>数値のみインポート</template>
+        </toggle-button>
+      </template>
+    </basic-dialog> 
+    <!-- <dialog id="modal-import-unit" closedby="any">
       <header>
         <h2>ココフォリアコマをインポート</h2>
         <button-css-icon icon-name="icon-close" command="close" commandfor="modal-import-unit"></button-css-icon>
@@ -450,7 +590,7 @@ PUBLISHED BY KADOKAWA CORPORATION 「クトゥルフ神話TRPG」「新クトゥ
           text-checked="数値 & コマ設定をインポート" text-not-checked="数値のみインポート"
         ></toggle-button>
       </section>
-    </dialog>
+    </dialog> -->
   </div>
   
   <script type="module" src="./code_vue.js"></script>
