@@ -1,12 +1,15 @@
-import ToggleButton from './components/toggle-button.js'
+import BasicDialog from './components/basic-dialog.js'
 import ButtonCssIcon from './components/button-css-icon.js'
+import ToggleButton from './components/toggle-button.js'
+
 const { createApp, ref, computed, watch, onMounted } = Vue;
 
 
 const rootApp = createApp({
   components: {
+    BasicDialog,
+    ButtonCssIcon,
     ToggleButton,
-    ButtonCssIcon
   },
   setup() {
     let id = 0;
@@ -77,8 +80,7 @@ const rootApp = createApp({
       // まずはdic形式で情報を集める
       /**
        * チャパレ用の情報を格納しておくリスト
-       * { id, type, name?, value, times?, noname? }
-       * @type {Array}
+       * @type {{ id: number, type: string, name?: string, value: string, times?: number | null, noname?: Boolean }[]}
        * @type 判定の種類\n
        *  - choice : チョイス
        *  - roll : 通常の判定
@@ -179,18 +181,7 @@ const rootApp = createApp({
     });
     watch(chatList, () => refChatList.value = chatList.value);
 
-
-    const fillBlank_skill = computed(() => {
-      const max = 6 - skillList.value.length;
-      if (max < 1) return [];
-      else return Array(max).fill(0);
-    });
-
-    const fillBlank_chat = computed(() => {
-      const max = 17 - chatList.value.length;
-      if (max < 1) return [];
-      else return Array(max).fill(0);
-    });
+    const fillLength_chat = computed(() => Math.max(17 - chatList.value.length, 0));
 
 
     function updateDefStats () {
@@ -572,8 +563,7 @@ const rootApp = createApp({
       skillList,
       refChatList,
 
-      fillBlank_skill,
-      fillBlank_chat,
+      fillLength_chat,
 
       addRow,
       deleteRow,
