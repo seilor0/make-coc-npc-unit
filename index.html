@@ -244,7 +244,7 @@
                 </tbody>
               </table>
     
-              <div class="setting-wrapper" style="font-size: 0.9rem;column-gap: 0.75rem;height: fit-content;margin-block: 0.25rem 0;margin-inline-start: -1rem;">
+              <div class="setting-div" style="font-size: 0.9rem;column-gap: 0.75rem;margin-block: 0.25rem 0;margin-inline-start: -1rem;">
                 <template v-for="data in chatTargets" :key="data.id">
                   <span>{{data.label}}</span>
                   <toggle-button :is-checked = "data.value" @checked-toggle = "val=>data.value=val"></toggle-button>
@@ -329,7 +329,7 @@
             並び替えることができます
           </p>
           <p>対象：</p>
-          <div class="graybox">
+          <div class="gray-box">
             <ul>
               <li>技能</li>
               <li>チャパレ</li>
@@ -346,7 +346,7 @@
             別個に設定できます
           </p>
           <p>対象：</p>
-          <div class="graybox">
+          <div class="gray-box">
             <ul>
               <li>パラメータ</li>
               <li>ステータス</li>
@@ -361,7 +361,7 @@
     <basic-dialog id="modal-dice-setting">
       <template #header>チャパレ設定</template>
       <template #content>
-        <div class="setting-wrapper" style="width: 22rem;">
+        <div class="setting-div" style="width: 22rem;">
           <span>システム</span>
           <toggle-button :top-is-slider="true" :is-checked="setting.is6th" @checked-toggle="value => setting.is6th=value">
             <template #checked>CoC6th</template>
@@ -383,7 +383,7 @@
           </select>
 
           <span></span>
-          <div class="setting-wrapper" style="margin: 0;column-gap: 0.5rem;">
+          <div class="setting-div" style="margin: 0;column-gap: 0.5rem;">
             <span>単体ダイス</span>
             <toggle-button :top-is-slider="true" :is-checked="setting.secretSingleDice" @checked-toggle="value => setting.secretSingleDice=value">
               <template #checked>シークレット</template>
@@ -402,7 +402,7 @@
     <basic-dialog id="modal-unit-setting" section-style="max-width: 22rem;">
       <template #header>キャラコマ設定</template>
       <template #content>
-        <div class="setting-wrapper">
+        <div class="setting-div">
           <span>ステータス</span>
           <toggle-button :top-is-slider="true" :is-checked="setting.secretUnit" @checked-toggle="value=>setting.secretUnit=value">
             <template #checked>秘匿</template>
@@ -420,7 +420,7 @@
           </toggle-button>
         </div>
         <hr>
-        <div class="setting-wrapper">
+        <div class="setting-div">
           <span>発言カラー</span>
           <div style="display: grid;grid-template-columns: auto auto 1fr;gap: 0.5rem;align-items: center;">
             <input type="color" v-model="setting.color">

@@ -270,6 +270,17 @@
     --line-color: var(--light-blue);
     --active-back-color: var(--blue-gradient);
   }
+  
+  .setting-div {
+    gap: 0.5rem 1.5rem;
+    margin-block: 0.5rem;
+  
+    > :nth-child(odd) {
+      padding: 0 0.75rem;
+      font-size: 0.9em;
+      white-space: nowrap;
+    }
+  }
 }
 
 
@@ -277,18 +288,6 @@
 /*  project component   */
 /* -------------------- */
 @layer component {
-  .export {
-    color: white;
-    background-color: rgb(67 67 67 / 60%);
-    border: 1px solid white;
-    box-shadow: 2px 3px 8px rgb(0 0 0 / 30%);
-    font-weight: 700;
-    
-    height: 6rem;
-    aspect-ratio: 1 / 1;
-    border-radius: 50%;
-  }
-  
   .shadow {
     box-shadow: 0px 4px 0px rgba(0, 0, 0, 0.2);
   }
@@ -304,25 +303,6 @@
     height: stretch;
   }
   
-  .setting-wrapper {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    column-gap: 1.5rem;
-    row-gap: 0.5rem;
-    margin-block: 0.5rem;
-  
-    > :nth-child(odd) {
-      color: darkslategray;
-      background: var(--pale-green-gradient);
-      text-align: center;
-      font-size: 0.9em;
-      white-space: nowrap;
-      height: fit-content;
-      border-radius: 0.25rem;
-      padding-inline: 0.75rem;
-    }
-  }
-  
   .triangle {
     background-color: hsl(from lightslategray h s l /33%);
     align-self: center;
@@ -334,7 +314,7 @@
     }
   }
 
-  .graybox {
+  .gray-box {
     background: var(--pale-green-gradient);
     padding: 0.5em 1em;
     margin-block: 0.5em;
