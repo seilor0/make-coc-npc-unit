@@ -4,9 +4,7 @@
 /* ------------------------------ */
 
 :root {
-  --accent : seagreen;
   --basic-font : 'Quicksand','Zen Kaku Gothic New';
-  /* accent-color : var(--accent); */
 }
 
 .material-symbols-outlined {
@@ -60,14 +58,14 @@
   }
   
   h2 {
-    margin-block-start: 0;
+    margin-block: 0;
     user-select: none;
     @media (max-width:600px) {margin-block-end: 0;}
   }
   
   hgroup {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: 0.75rem;
   }
   
@@ -148,7 +146,7 @@
   }
 
   :is(main,dialog) li::marker{
-    color: seagreen;
+    color: var(--accent);
     font-weight: 600;
   }
   
@@ -200,28 +198,30 @@
     th,td {
       font-weight: 500;
       padding: 0.25rem;
+
       &:has(input[type="text"],input[type="number"]) {padding:0;}
+      
+      input[type="text"],
+      input[type="number"] {
+        background-color: transparent;
+        width: inherit;
+        padding: 0.25rem;
+        border-width: 0;
+      }
     }
-  
-    :is(th,td) input:is([type="text"],[type="number"]) {
-      background-color: transparent;
-      width: inherit;
-      padding: 0.25rem;
-      border-width: 0;
-    }
-  
-    thead th {
-      color:white;
-      background-color: lightsalmon;
+
+    thead {
+      color: white;
+      background: var(--blue-gradient);
       user-select: none;
-      &:first-child{ border-start-start-radius: 0.25rem; }
-      &:last-child { border-start-end-radius:   0.25rem; }
+      th:first-child{ border-start-start-radius: 0.25rem; }
+      th:last-child { border-start-end-radius:   0.25rem; }
     }
   
     tbody {
-      tr:nth-of-type(even) :is(th,td) { background-color: #eee; }
+      tr:nth-of-type(even) :is(th,td) {background-color: var(--cool-gray);}
       th,td { border-block-end: 1px solid darkgray; }
-      th    { border-inline-end: 3px dotted rgba(0,0,0,0.15); }
+      th    { border-inline-end: 3px dotted hsl(from lightslategray h s l /33%); }
       
       input[type='checkbox'] {
         margin: 0;
@@ -250,7 +250,6 @@
   main {
     padding: 2.5rem;
     padding-block-end: 1.5rem;
-    /* display: flex; */
     gap: 2rem;
     justify-content: center;
   
@@ -264,10 +263,6 @@
 }
 
 @layer layout {
-  .l-basic-footer {
-    color: gray;
-    background: #eee;
-  }
   .l-basic-footer__content {
     border-block-end: 1px solid #aaa;
     @media(max-width: 600px) {border-block-end-style: none;}
@@ -292,7 +287,7 @@
 }
 
 @layer layout {
-  .output-div {
+  .l-output-div {
     display: flex;
     gap: 2rem;
     @media (max-width:600px) {
@@ -301,7 +296,7 @@
     }
   }
   
-  .output-l {
+  .l-output-l {
     display: grid;
     grid-template-columns: repeat(2, min-content);
     grid-template-rows: auto 1fr;
@@ -326,17 +321,9 @@
 /*  imported component  */
 /* -------------------- */
 @layer component {
-  .icon-frame {
-    padding: 0.5rem;
-    border: 1px solid darkgray;
-    border-radius: 3px;
-    caption & {padding: 0.25rem;}
-  }
-  
   .icon {
     --size: 0.75rem;
     --line-radius: 1px;
-    color: darkgray;
   }
   
   .toggle-button {
@@ -347,6 +334,23 @@
     .checked     {color: var(--accent);}
     .not-checked {color: rgb(0 0 0 / 0.4);}
   }
+
+  .invert-el.round-button {
+    --line-color: var(--light-blue);
+    --active-back-color: var(--blue-gradient);
+  }
+
+  .round-button {
+    display: flex;
+    justify-content: start;
+    padding-inline: 1.5em;
+    width: stretch;
+    margin-block-start: 1rem;
+
+    :not:has(.material-symbols-outlined) {
+      padding-inline-start: 1.1em;
+    }
+  }
 }
 
 
@@ -354,35 +358,28 @@
 /*  project component   */
 /* -------------------- */
 @layer component {
-  button.export {
-    --size: 6rem;
+  .export {
     color: white;
     background-color: rgb(67 67 67 / 60%);
     border: 1px solid white;
-    border-radius: 50%;
-    box-shadow: -4px -4px 8px rgb(255 255 255 / 20%), 2px 3px 8px rgb(0 0 0 / 30%);
+    box-shadow: 2px 3px 8px rgb(0 0 0 / 30%);
     font-weight: 700;
-    height: var(--size);
-    width: var(--size);
+    
+    height: 6rem;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
   }
   
-  .aside-button {
-    color: white;
-    background-color: #92c1a7;
-    border: 1px solid white;
-    border-radius: 2rem;
-  
-    display: flex;
-    align-items: center;
-  
-    height: 2.25rem;
-    width: stretch;
-    font-size: calc(1rem - 1px);
-    box-shadow: -4px -4px 8px #fff, 2px 2px 4px rgb(0 0 0 / 20%);
-    margin-block: 1rem;
-    padding-inline: 1.125rem;
-  
-    &:hover {text-decoration: underline;}
+  .shadow {
+    box-shadow: 0px 4px 0px rgba(0, 0, 0, 0.2);
+  }
+  .invert-el.shadow {
+    --text-color: #6fc9d8;
+    --back-color: transparent;
+    --line-color: #6fc9d8;
+    border-radius: 3px;
+    padding: 4px;
+    font-weight: 800;
   }
   
   .button-wrap {
@@ -415,7 +412,8 @@
     margin-block: 0.5rem;
   
     > :nth-child(odd) {
-      background-color: hsl( 0 0 90);
+      color: darkslategray;
+      background: var(--pale-green-gradient);
       text-align: center;
       font-size: 0.9em;
       white-space: nowrap;
@@ -426,7 +424,7 @@
   }
   
   .triangle {
-    background-color: lightgray;
+    background-color: hsl(from lightslategray h s l /33%);
     align-self: center;
     height: 1.25rem;
     aspect-ratio: cos(30deg);
@@ -437,7 +435,7 @@
   }
 
   .graybox {
-    background-color: #e6e6e6;
+    background: var(--pale-green-gradient);
     padding: 0.5em 1em;
     margin-block: 0.5em;
     border-radius: 0.5em;
@@ -452,7 +450,7 @@
 
   p.title {
     color: white;
-    background-color: var(--accent);
+    background: var(--blue-gradient);
     padding: 0.25ch 1ch;
     margin-inline-start: -0.25em;
     border-radius: 2.5rem;

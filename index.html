@@ -25,31 +25,31 @@
       <!-- 左メニュー -->
       <aside>
         <h1>NPCコマ<br>作成ツール</h1>
-        <button class="aside-button" command="show-modal" commandfor="modal-how2use" style="background-color: lightsalmon;">
+        <!-- <button class="round-button invert-el" command="show-modal" commandfor="modal-how2use">
           このサイトについて
-        </button>
-        <button class="aside-button" command="show-modal" commandfor="modal-useful" style="background-color: lightsalmon;">
-          便利機能
-        </button>
-        <button class="aside-button" command="show-modal" commandfor="modal-dice-setting">
+        </button> -->
+        <button class="round-button invert-el invert" command="show-modal" commandfor="modal-dice-setting">
           <span class="material-symbols-outlined">settings</span>
           チャパレ設定
         </button>
-        <button class="aside-button" command="show-modal" commandfor="modal-unit-setting">
+        <button class="round-button invert-el invert" command="show-modal" commandfor="modal-unit-setting">
           <span class="material-symbols-outlined">settings</span>
           コマ設定
         </button>
-        <button class="aside-button" command="show-modal" commandfor="modal-import-unit">
+        <button class="round-button invert-el" command="show-modal" commandfor="modal-import-unit">
           <span class="material-symbols-outlined">input</span>
           コマをインポート
+        </button>
+        <button class="round-button invert-el" command="show-modal" commandfor="modal-useful">
+          便利機能
         </button>
       </aside>
 
       <!-- 入力欄 -->
       <section style="width: 23rem;">
-        <hgroup>
+        <hgroup style="margin-block-end: 1.5rem;">
           <h2>入力</h2>
-          <button @click="clear">CLEAR</button>
+          <button @click="clear" class="invert-el shadow">クリア</button>
         </hgroup>
 
         <!-- 名前欄 -->
@@ -100,15 +100,15 @@
 
       <!-- 出力欄 -->
       <section style="width: max-content;">
-        <h2>出力</h2>
-        <div class="output-div">
-          <div class="output-l">
+        <h2 style="margin-block-end: 1.5rem;">出力</h2>
+        <div class="l-output-div">
+          <div class="l-output-l">
 
             <table class="value-table secret-table" style="grid-row: 1 / 3;">
               <caption>
                 パラメータ
-                <button-css-icon icon-name="icon-plus" @click="addRow('params')"></button-css-icon>
-                <button-css-icon icon-name="icon-minus" @click="deleteRow('params')"></button-css-icon>
+                <button-css-icon icon-name="icon-plus" class="invert-el shadow" @click="addRow('params')"></button-css-icon>
+                <button-css-icon icon-name="icon-minus" class="invert-el shadow" @click="deleteRow('params')"></button-css-icon>
               </caption>
               <tbody>
                 <tr v-for="[key,dic] in defStats.params" :key="dic.id" :class="{disable: dic.del}" @click="dic.del=!dic.del">
@@ -136,8 +136,8 @@
             <table class="value-table secret-table">
               <caption>
                 ステータス
-                <button-css-icon icon-name="icon-plus" @click="addRow('stats')"></button-css-icon>
-                <button-css-icon icon-name="icon-minus" @click="deleteRow('stats')"></button-css-icon> 
+                <button-css-icon icon-name="icon-plus" class="invert-el shadow" @click="addRow('stats')"></button-css-icon>
+                <button-css-icon icon-name="icon-minus" class="invert-el shadow" @click="deleteRow('stats')"></button-css-icon> 
               </caption>
               <tbody>
                 <tr v-for="[key,dic] in defStats.stats" :key="dic.id" :class="{disable: dic.del}" @click="dic.del=!dic.del">
@@ -233,7 +233,7 @@
           <div class="setting-wrapper" style="font-size: 0.9rem;column-gap: 0.75rem;height: fit-content;margin-block: 0.25rem 0;margin-inline-start: -1rem;">
             <template v-for="data in chatTargets" :key="data.id">
               <span>{{data.label}}</span>
-              <toggle-button style="--color:lightsalmon" :is-checked = "data.value" @checked-toggle = "value => data.value=value"></toggle-button>
+              <toggle-button :is-checked = "data.value" @checked-toggle = "val=>data.value=val"></toggle-button>
             </template>
           </div>
 
@@ -291,7 +291,7 @@ PUBLISHED BY KADOKAWA CORPORATION 「クトゥルフ神話TRPG」「新クトゥ
     </footer>
 
     <div class="button-wrap">
-      <button class="export" style="background-color: #418660;" @click="exportUnit">
+      <button class="export" style="background: var(--blue-gradient);" @click="exportUnit">
         ココフォリア<br>コマ出力
       </button>
       <button class="export" @click="copy2clipboard($event.currentTarget, getChatpalette())">
