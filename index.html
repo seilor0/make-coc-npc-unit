@@ -67,13 +67,13 @@
             </hgroup>
     
             <!-- 名前欄 -->
-            <div class="title" style="margin-block-start: 0;">
+            <div class="plane-title" style="margin-block-start: 0;">
               名前/メモ欄
             </div>
             <textarea id="name"></textarea>
     
             <!-- 能力値 -->
-            <div class="title">
+            <div class="plane-title">
               能力値 etc.
               <div class="tips">
                 <google-icon>info</google-icon>
@@ -89,7 +89,7 @@
             <textarea id="stats" @change="updateDefStats"></textarea>
     
             <!-- 技能・ダイス・choice -->
-            <div class="title">
+            <div class="plane-title">
               技能・ダイス etc.
               <div class="tips">
                 <google-icon>info</google-icon>
@@ -100,7 +100,7 @@
                     <li class="ok">全角の記号/英数字</li>
                   </ul>
                   <p style="margin-block: 0.5rem;">
-                    <span class="title">消す文字（正規表現）：</span>
+                    <span class="marker-title">消す文字（正規表現）</span>
                   </p>
                   <input type="text" v-model="setting.delChar" @input="updateSkillList" style="font-family: 'Zen Kaku Gothic New';field-sizing: content;">
                 </div>

@@ -341,14 +341,7 @@
     border-radius: 0.5em;
   }
   
-  span.title {
-    background-color: gray; 
-    color: #fafafa; 
-    font-weight: 500; 
-    padding-inline: 0.5ch;
-  }
-
-  p.title {
+  .title {
     color: white;
     background: var(--blue-gradient);
     padding: 0.25ch 1ch;
@@ -358,7 +351,15 @@
     font-size: calc(1em + 0.5px);
   }
   
-  div.title {
+  .marker-title {
+    color: darkslategray;
+    background: var(--pale-green-gradient); 
+    font-weight: 500; 
+    font-size: calc(1em + 1px);
+    padding-inline: 0.5ch;
+  }
+  
+  .plane-title {
     font-weight: 500;
     margin-block: 1rem 0.5rem;
     user-select: none;
