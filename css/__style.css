@@ -8,12 +8,7 @@
 }
 
 .material-symbols-outlined {
-  font-variation-settings: 'wght' 200;
-
-  .aside-button & {
-    margin-inline-start: -0.3rem;
-    text-decoration: none !important;
-  }
+  font-variation-settings: 'wght' 200, 'FILL' 0;
 
   .tips > & {
     font-variation-settings:'wght' 400;
@@ -49,12 +44,9 @@
 /* ---------------------- */
 @layer base {
   h1 {
-    font-size: 2rem;
-    padding-inline-start: 1rem;
-    margin-block: 0 1rem;
-    border-inline-start: 0.25rem solid var(--accent);
-    line-height: 1.2;
-    letter-spacing: 2px;
+    text-align: center;
+    user-select: none;
+    font-weight: 100;
   }
   
   h2 {
@@ -88,12 +80,6 @@
     field-sizing: content;
     box-sizing: border-box;
     width: stretch;
-  
-    details[name='aside'] & {
-      margin-block-end: 0.5rem;
-      min-height: 4rem;
-      overflow-wrap: anywhere;
-    }
   }
   
   select {
@@ -179,61 +165,6 @@
       padding-inline-start: 2ch;
     }
   }
-  
-  main table {
-    border-spacing: 0 0.25rem;
-    font-size: small;
-    letter-spacing: 0.5px;
-    
-    caption {
-      text-align: left;
-      font-size: calc(1rem - 1px);
-      font-weight: 500;
-      margin-block-end: 0.25rem;
-      user-select: none;
-    }
-  
-    tr {height: 1.5rem;}
-  
-    th,td {
-      font-weight: 500;
-      padding: 0.25rem;
-
-      &:has(input[type="text"],input[type="number"]) {padding:0;}
-      
-      input[type="text"],
-      input[type="number"] {
-        background-color: transparent;
-        width: inherit;
-        padding: 0.25rem;
-        border-width: 0;
-      }
-    }
-
-    thead {
-      color: white;
-      background: var(--blue-gradient);
-      user-select: none;
-      th:first-child{ border-start-start-radius: 0.25rem; }
-      th:last-child { border-start-end-radius:   0.25rem; }
-    }
-  
-    tbody {
-      tr:nth-of-type(even) :is(th,td) {background-color: var(--cool-gray);}
-      th,td { border-block-end: 1px solid darkgray; }
-      th    { border-inline-end: 3px dotted hsl(from lightslategray h s l /33%); }
-      
-      input[type='checkbox'] {
-        margin: 0;
-        margin-block-start: 0.25rem;
-        width: 1rem;
-        height: 1rem;
-      }
-    }
-    &:not(:has(thead)) tr:first-child > * { border-block-start: 1px solid darkgray; }
-  }
-  
-  caption button {margin-inline-start: 4px;}
 }
 
 
@@ -242,27 +173,17 @@
 /*       || layout        */
 /* ---------------------- */
 /* imported */
-@layer layout { 
-  #root {
-    flex-direction: column;
-  }
-
-  main {
-    padding: 2.5rem;
-    padding-block-end: 1.5rem;
-    gap: 2rem;
-    justify-content: center;
-  
-    @media (max-width:600px) {
-      padding: 1.5rem 1rem;
-      flex-direction: column;
-      align-items: center;
-      gap: 1rem;
+@layer layout {
+  .l-side-bar__content {
+    padding: 1.5rem 2.5rem;
+    width: 16rem;
+    
+    .round-button {
+      width: 80%;
+      white-space: nowrap;
     }
   }
-}
 
-@layer layout {
   .l-basic-footer__content {
     border-block-end: 1px solid #aaa;
     @media(max-width: 600px) {border-block-end-style: none;}
@@ -272,21 +193,27 @@
 
 /* project */
 @layer layout {
-  aside {
-    align-self: start;
-    white-space: nowrap;
-    max-width: min-content;
-    user-select: none;
-    margin-inline-end: 3.5rem;
+  .l-main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .l-content {
+    padding: 2.5rem 5rem;
+    padding-block-end: 1.5rem;
+    display: flex;
+    gap: 2rem;
+    flex-grow: 1;
+  
     @media (max-width:600px) {
-      max-width: initial;
-      align-self: center;
-      margin-inline-end: 0;
+      padding: 1.5rem 1rem;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
     }
   }
-}
-
-@layer layout {
+  
   .l-output-div {
     display: flex;
     gap: 2rem;
@@ -323,7 +250,7 @@
 @layer component {
   .icon {
     --size: 0.75rem;
-    --line-radius: 1px;
+    --line-radius: 1.5px;
   }
   
   .toggle-button {
@@ -335,21 +262,13 @@
     .not-checked {color: rgb(0 0 0 / 0.4);}
   }
 
+  .round-button {
+    justify-content: start;
+    padding-inline: 1.25rem;
+  }
   .invert-el.round-button {
     --line-color: var(--light-blue);
     --active-back-color: var(--blue-gradient);
-  }
-
-  .round-button {
-    display: flex;
-    justify-content: start;
-    padding-inline: 1.5em;
-    width: stretch;
-    margin-block-start: 1rem;
-
-    :not:has(.material-symbols-outlined) {
-      padding-inline-start: 1.1em;
-    }
   }
 }
 
@@ -380,28 +299,9 @@
     border-radius: 3px;
     padding: 4px;
     font-weight: 800;
-  }
-  
-  .button-wrap {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    position: fixed;
-    right: 5%;
-    bottom: 2rem;
-    z-index: 2;
-  
-    @media (max-width:800px) {
-      bottom: 0;
-      right: 0;
-      gap: 0.5rem;
-      transform: scale(0.9);
-      transform-origin: right bottom;
-    }
-    @media (max-width:600px) {
-      transform: scale(0.75);
-      transform-origin: right bottom;
-    }
+    display: inline-flex;
+    align-items: center;
+    height: stretch;
   }
   
   .setting-wrapper {
@@ -526,6 +426,53 @@
 
 /* table */
 @layer component {
+  caption {
+    text-align: left;
+    font-size: calc(1rem - 1px);
+    font-weight: 500;
+    margin-block-end: 0.25rem;
+    user-select: none;
+  }
+  caption button {margin-inline-start: 4px;}
+  
+  table {
+    border-spacing: 0 0.25rem;
+    font-size: small;
+    letter-spacing: 0.5px;
+  }
+  
+  tr {height: 1.5rem;}
+  
+  th,td {
+    font-weight: 500;
+    padding: 0.25rem;
+
+    &:has(input[type="text"],input[type="number"]) {padding:0;}
+    
+    input[type="text"],
+    input[type="number"] {
+      background-color: transparent;
+      width: inherit;
+      padding: 0.25rem;
+      border-width: 0;
+    }
+  }
+  
+  tbody {
+    tr:nth-of-type(even) :is(th,td) {background-color: var(--cool-gray);}
+    th,td { border-block-end: 1px solid darkgray; }
+    th    { border-inline-end: 3px dotted hsl(from lightslategray h s l /33%); }
+    
+    input[type='checkbox'] {
+      margin: 0;
+      margin-block-start: 0.25rem;
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+  table:not(:has(thead)) tr:first-child > * { border-block-start: 1px solid darkgray; }
+  
+
   #skill-table {
     grid-column: 1 / -1;
     th, td {
@@ -539,6 +486,13 @@
     height: fit-content;
     tr > :nth-child(2) {width: 1rem}
     thead th:last-child {padding-inline: 8ch}
+    thead {
+      color: white;
+      background: var(--blue-gradient);
+      user-select: none;
+      th:first-child{ border-start-start-radius: 0.25rem; }
+      th:last-child { border-start-end-radius:   0.25rem; }
+    }
   }
   
   .value-table {

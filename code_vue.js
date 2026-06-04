@@ -1,6 +1,7 @@
 import BasicDialog from './components/basic-dialog.js'
 import ButtonCssIcon from './components/button-css-icon.js'
 import ToggleButton from './components/toggle-button.js'
+import GoogleIcon from './components/google-icon.js';
 
 const { createApp, ref, computed, watch, onMounted } = Vue;
 
@@ -10,6 +11,7 @@ const rootApp = createApp({
     BasicDialog,
     ButtonCssIcon,
     ToggleButton,
+    GoogleIcon,
   },
   setup() {
     let id = 0;
@@ -509,10 +511,10 @@ const rootApp = createApp({
     }
 
     function copy2clipboard(element, text) {
-      const defText = element.innerText;
+      const defText = element.lastChild.textContent;
       navigator.clipboard.writeText(text);
-      element.innerText = 'Copied!';
-      setTimeout(() => element.innerText=defText, 1000);
+      element.lastChild.textContent = 'Copied!';
+      setTimeout(() => element.lastChild.textContent=defText, 1000);
     }
 
 
