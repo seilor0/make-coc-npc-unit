@@ -8,9 +8,14 @@
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300..700" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,200..400,0,0&icon_names=info,input,settings" />
-  <link rel="stylesheet" href="../__utility/style.css" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..24,200..400,0..1,0&icon_names=info,input,move_item,settings" />
+  
+  <link rel="stylesheet" href="./css/_base.css" />
+  <link rel="stylesheet" href="./css/basic-dialog.css" />
+  <link rel="stylesheet" href="./css/css-icon.css" />
+  <link rel="stylesheet" href="./css/toggle-button.css" />
+  <link rel="stylesheet" href="./css/__style.css" />
+  
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 </head>
 
@@ -18,290 +23,291 @@
   <div id="root">
     <main>
       <!-- 左メニュー -->
-      <aside>
-        <h1>NPCコマ<br>作成ツール</h1>
-        <button class="aside-button" command="show-modal" commandfor="modal-how2use" style="background-color: lightsalmon;">
-          このサイトについて
-        </button>
-        <button class="aside-button" command="show-modal" commandfor="modal-useful" style="background-color: lightsalmon;">
-          便利機能
-        </button>
-        <button class="aside-button" command="show-modal" commandfor="modal-dice-setting">
-          <span class="material-symbols-outlined">settings</span>
-          チャパレ設定
-        </button>
-        <button class="aside-button" command="show-modal" commandfor="modal-unit-setting">
-          <span class="material-symbols-outlined">settings</span>
-          コマ設定
-        </button>
-        <button class="aside-button" command="show-modal" commandfor="modal-import-unit">
-          <span class="material-symbols-outlined">input</span>
-          コマをインポート
-        </button>
+      <aside class="l-side-bar">
+        <div class="l-side-bar__content">
+          <h1>NPCコマ<br>作成ツール</h1>
+          <!-- <button class="round-button invert-el" command="show-modal" commandfor="modal-how2use">
+            このサイトについて
+          </button> -->
+          
+          <button class="round-button invert-el invert" @click="exportUnit">
+            <google-icon>move_item</google-icon>
+            ココフォリアコマ出力
+          </button>
+          <button class="round-button invert-el invert" @click="copy2clipboard($event.currentTarget, getChatpalette())">
+            <google-icon>move_item</google-icon>
+            チャパレ出力
+          </button>
+
+          <button class="round-button invert-el" command="show-modal" commandfor="modal-dice-setting">
+            <google-icon style="font-variation-settings: 'FILL' 1, 'opsz' 20;">settings</google-icon>
+            チャパレ設定
+          </button>
+          <button class="round-button invert-el" command="show-modal" commandfor="modal-unit-setting">
+            <google-icon style="font-variation-settings: 'FILL' 1, 'opsz' 20;">settings</google-icon>
+            コマ設定
+          </button>
+          <button class="round-button invert-el" command="show-modal" commandfor="modal-useful">
+            便利機能
+          </button>
+        </div>
       </aside>
 
-      <!-- 入力欄 -->
-      <section style="width: 23rem;">
-        <hgroup>
-          <h2>入力</h2>
-          <button @click="clear">CLEAR</button>
-        </hgroup>
-
-        <!-- 名前欄 -->
-        <div class="title" style="margin-block-start: 0;">
-          名前/メモ欄
+      <div class="l-main-content">
+        <div class="l-content">
+          <!-- 入力欄 -->
+          <section style="width: 23rem;">
+            <hgroup style="margin-block-end: 1.5rem;">
+              <h2 style="flex-grow: 1;">入力</h2>
+              <button class="invert-el shadow" command="show-modal" commandfor="modal-import-unit">
+                <google-icon>input</google-icon>
+                インポート
+              </button>        
+              <button @click="clear" class="invert-el shadow">クリア</button>
+            </hgroup>
+    
+            <!-- 名前欄 -->
+            <div class="plane-title" style="margin-block-start: 0;">
+              名前/メモ欄
+            </div>
+            <textarea id="name"></textarea>
+    
+            <!-- 能力値 -->
+            <div class="plane-title">
+              能力値 etc.
+              <div class="tips">
+                <google-icon>info</google-icon>
+                <div>
+                  <ul>
+                    <li class="ok">途中改行</li>
+                    <li class="ok">謎の半角/全角スペース</li>
+                    <li class="ok">全角英数字</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <textarea id="stats" @change="updateDefStats"></textarea>
+    
+            <!-- 技能・ダイス・choice -->
+            <div class="plane-title">
+              技能・ダイス etc.
+              <div class="tips">
+                <google-icon>info</google-icon>
+                <div>
+                  <ul>
+                    <li class="ng">途中改行</li>
+                    <li class="ok">謎の半角/全角スペース</li>
+                    <li class="ok">全角の記号/英数字</li>
+                  </ul>
+                  <p style="margin-block: 0.5rem;">
+                    <span class="marker-title">消す文字（正規表現）</span>
+                  </p>
+                  <input type="text" v-model="setting.delChar" @input="updateSkillList" style="font-family: 'Zen Kaku Gothic New';field-sizing: content;">
+                </div>
+              </div>
+            </div>
+            <textarea id="skills" @input="updateSkillList"></textarea>
+            <p class="annotation">※半角スペースはアンダーバー(_)で代記</p>
+          </section>
+    
+          <div class="triangle"></div>
+    
+          <!-- 出力欄 -->
+          <section style="width: max-content;">
+            <h2 style="margin-block-end: 1.5rem;">出力</h2>
+            <div class="l-output-div">
+              <div class="l-output-l">
+    
+                <table class="value-table secret-table" style="grid-row: 1 / 3;">
+                  <caption>
+                    パラメータ
+                    <button-css-icon icon-name="icon-plus" class="invert-el shadow" @click="addRow('params')"></button-css-icon>
+                    <button-css-icon icon-name="icon-minus" class="invert-el shadow" @click="deleteRow('params')"></button-css-icon>
+                  </caption>
+                  <tbody>
+                    <tr v-for="[key,dic] in defStats.params" :key="dic.id" :class="{'is-disabled': dic.del}" @click="dic.del=!dic.del">
+                      <td><input type="checkbox" v-model="dic.del"></td>
+                      <th>{{key}}</th>
+                      <td>{{dic.value}}</td>
+                    </tr>
+                    <tr 
+                      v-for="(param, index) in exStats.params" 
+                      :key="param.id"
+                      :draggable="true"
+                      :class="{'is-dragging': index===dragIndex && dragTarget===exStats.params}"
+                      @dragstart="dragStart(index, exStats.params)"
+                      @dragenter="dragEnter(index, exStats.params)"
+                      @dragover.prevent
+                      @dragend="dragEnd"
+                    >
+                      <td></td>
+                      <th><input type="text" v-model="param.label"/></th>
+                      <td><input type="text" v-model="param.value"/></td>
+                    </tr>
+                  </tbody>
+                </table>
+    
+                <table class="value-table secret-table">
+                  <caption>
+                    ステータス
+                    <button-css-icon icon-name="icon-plus" class="invert-el shadow" @click="addRow('stats')"></button-css-icon>
+                    <button-css-icon icon-name="icon-minus" class="invert-el shadow" @click="deleteRow('stats')"></button-css-icon> 
+                  </caption>
+                  <tbody>
+                    <tr v-for="[key,dic] in defStats.stats" :key="dic.id" :class="{'is-disabled': dic.del}" @click="dic.del=!dic.del">
+                      <td><input type="checkbox" v-model="dic.del"></td>
+                      <th>{{key}}</th>
+                      <td>{{dic.value}}</td>
+                    </tr>
+                    <tr
+                      v-for="(stat,index) in exStats.stats" 
+                      :key="stat.id"
+                      :draggable="true"
+                      :class="{'is-dragging': index === dragIndex && dragTarget===exStats.stats}"
+                      @dragstart="dragStart(index, exStats.stats)"
+                      @dragenter="dragEnter(index, exStats.stats)"
+                      @dragover.prevent
+                      @dragend="dragEnd"
+                    >
+                      <td></td>
+                      <th><input type="text" v-model="stat.label"/></th>
+                      <td><input type="text" v-model="stat.value"/></td>
+                    </tr>
+                  </tbody>
+                </table>
+    
+                <table class="value-table">
+                  <caption>他</caption>
+                  <tbody>
+                    <tr v-for="[key,dic] in defStats.else" :key="dic.id">
+                      <th>{{key}}</th>
+                      <td>{{dic.value}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+    
+                <table id="skill-table">
+                  <caption>技能</caption>
+                  <tbody>
+                    <tr 
+                      v-for="(dic,index) in skillList" 
+                      :key="dic.id"
+                      :draggable="true"
+                      :class="{'is-dragging': index === dragIndex && dragTarget===skillList}"
+                      @dragstart="dragStart(index, skillList)"
+                      @dragenter="dragEnter(index, skillList)"
+                      @dragover.prevent
+                      @dragend="dragEnd"
+                    >
+                      <th :class="{'is-disabled' : dic.noname}" @click="dic.noname = !dic.noname">
+                        {{dic.times ? `x${dic.times} ` : ''}}{{dic.name}}
+                      </th>
+                      <td>{{dic.value}}</td>
+                    </tr>
+                    <tr v-for="val in Math.max(6-skillList.length, 0)">
+                      <th></th>
+                      <td></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+    
+              <table id="chat-table" class="secret-table">
+                <thead>
+                  <tr>
+                    <th>✕</th>
+                    <th>s</th>
+                    <th>chat palette</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr 
+                    v-for="(dic,index) in refChatList"
+                    :draggable="true"
+                    :class="{'is-dragging': index === dragIndex && dragTarget===refChatList}"
+                    @dragstart="dragStart(index, refChatList)"
+                    @dragenter="dragEnter(index, refChatList)"
+                    @dragover.prevent
+                    @dragend="dragEnd"
+                  >
+                    <td><input type="checkbox" v-model="dic.del"></td>
+                    <td><input type="checkbox" v-model="dic.secret"></td>
+                    <td :class="{'is-disabled': dic.del}" @click="dic.del=!dic.del">
+                      {{dic.times}}{{dic.secret ? 's' : ''}}{{dic.text}}
+                    </td>
+                  </tr>
+                  <tr v-for="val in fillLength_chat">
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+    
+              <div class="setting-div" style="font-size: 0.9rem;column-gap: 0.75rem;margin-block: 0.25rem 0;margin-inline-start: -1rem;">
+                <template v-for="data in chatTargets" :key="data.id">
+                  <span>{{data.label}}</span>
+                  <toggle-button :is-checked = "data.value" @checked-toggle = "val=>data.value=val"></toggle-button>
+                </template>
+              </div>
+    
+            </div>
+          </section>
         </div>
-        <textarea id="name"></textarea>
 
-        <!-- 能力値 -->
-        <div class="title">
-          能力値 etc.
-          <div class="tips">
-            <span class="material-symbols-outlined">info</span>
+        <footer class="l-basic-footer">
+          <div class="l-basic-footer__content">
             <div>
+              <h2>CONTACT</h2>
+              <span style="font-size: larger;">セイル</span>
+              <br>
+              Booth: https://seils.booth.pm/
+              <br>
+              X(旧Twitter): @seilor0
+            </div>
+            <div>
+              <h2>CAUTION</h2>
               <ul>
-                <li class="ok">途中改行</li>
-                <li class="ok">謎の半角/全角スペース</li>
-                <li class="ok">全角英数字</li>
+                <li>
+                  作業環境：Windows11 / Google Chrome
+                  <br>
+                  上記以外の環境はテストしていないため、不具合が出る可能性があります。
+                </li>
+                <li>
+                  当サイトの利用によるいかなるトラブルも作者は責任を負いません。
+                  <br>
+                  ご利用は自己責任にてお願いいたします。
+                </li>
+                <li>
+                  何かあれば左の連絡先までご連絡ください。
+                </li>
               </ul>
             </div>
-          </div>
-        </div>
-        <textarea id="stats" @change="updateDefStats"></textarea>
-
-        <!-- 技能・ダイス・choice -->
-        <div class="title">
-          技能・ダイス etc.
-          <div class="tips">
-            <span class="material-symbols-outlined">info</span>
             <div>
-              <ul>
-                <li class="ng">途中改行</li>
-                <li class="ok">謎の半角/全角スペース</li>
-                <li class="ok">全角の記号/英数字</li>
-              </ul>
-              <p style="margin-block: 0.5rem;">
-                <span class="title">消す文字（正規表現）：</span>
-              </p>
-              <input type="text" v-model="setting.delChar" @input="updateSkillList" style="font-family: 'Zen Kaku Gothic New';field-sizing: content;">
+              <h2>UPDATE</h2>
+              <table>
+                <thead>
+                  <tr>
+                    <th>date</th>
+                    <th>version</th>
+                    <th>detail</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
             </div>
           </div>
-        </div>
-        <textarea id="skills" @input="updateSkillList"></textarea>
-        <p class="annotation">※半角スペースはアンダーバー(_)で代記</p>
-      </section>
-
-      <div class="triangle"></div>
-
-      <!-- 出力欄 -->
-      <section style="width: max-content;">
-        <h2>出力</h2>
-        <div class="output-div">
-          <div class="output-l">
-
-            <table class="value-table secret-table" style="grid-row: 1 / 3;">
-              <caption>
-                パラメータ
-                <button-css-icon icon-name="icon-plus" @click="addRow('params')"></button-css-icon>
-                <button-css-icon icon-name="icon-minus" @click="deleteRow('params')"></button-css-icon>
-              </caption>
-              <tbody>
-                <tr v-for="[key,dic] in defStats.params" :key="dic.id" :class="{disable: dic.del}" @click="dic.del=!dic.del">
-                  <td><input type="checkbox" v-model="dic.del"></td>
-                  <th>{{key}}</th>
-                  <td>{{dic.value}}</td>
-                </tr>
-                <tr 
-                  v-for="(param, index) in exStats.params" 
-                  :key="param.id"
-                  :draggable="true"
-                  :class="index===dragIndex && dragTarget===exStats.params ? 'dragging' : null"
-                  @dragstart="dragStart(index, exStats.params)"
-                  @dragenter="dragEnter(index, exStats.params)"
-                  @dragover.prevent
-                  @dragend="dragEnd"
-                >
-                  <td></td>
-                  <th><input type="text" v-model="param.label"/></th>
-                  <td><input type="text" v-model="param.value"/></td>
-                </tr>
-              </tbody>
-            </table>
-
-            <table class="value-table secret-table">
-              <caption>
-                ステータス
-                <button-css-icon icon-name="icon-plus" @click="addRow('stats')"></button-css-icon>
-                <button-css-icon icon-name="icon-minus" @click="deleteRow('stats')"></button-css-icon> 
-              </caption>
-              <tbody>
-                <tr v-for="[key,dic] in defStats.stats" :key="dic.id" :class="{disable: dic.del}" @click="dic.del=!dic.del">
-                  <td><input type="checkbox" v-model="dic.del"></td>
-                  <th>{{key}}</th>
-                  <td>{{dic.value}}</td>
-                </tr>
-                <tr
-                  v-for="(stat,index) in exStats.stats" 
-                  :key="stat.id"
-                  :draggable="true"
-                  :class="index === dragIndex && dragTarget===exStats.stats ? 'dragging' : null"
-                  @dragstart="dragStart(index, exStats.stats)"
-                  @dragenter="dragEnter(index, exStats.stats)"
-                  @dragover.prevent
-                  @dragend="dragEnd"
-                >
-                  <td></td>
-                  <th><input type="text" v-model="stat.label"/></th>
-                  <td><input type="text" v-model="stat.value"/></td>
-                </tr>
-              </tbody>
-            </table>
-
-            <table class="value-table">
-              <caption>他</caption>
-              <tbody>
-                <tr v-for="[key,dic] in defStats.else" :key="dic.id">
-                  <th>{{key}}</th>
-                  <td>{{dic.value}}</td>
-                </tr>
-              </tbody>
-            </table>
-
-            <table id="skill-table">
-              <caption>技能</caption>
-              <tbody>
-                <tr 
-                  v-for="(dic,index) in skillList" 
-                  :key="dic.id"
-                  :draggable="true"
-                  :class="index === dragIndex && dragTarget===skillList ? 'dragging' : null"
-                  @dragstart="dragStart(index, skillList)"
-                  @dragenter="dragEnter(index, skillList)"
-                  @dragover.prevent
-                  @dragend="dragEnd"
-                >
-                  <th :class="{disable : dic.noname}" @click="dic.noname = !dic.noname">
-                    {{dic.times ? `x${dic.times} ` : ''}}{{dic.name}}
-                  </th>
-                  <td>{{dic.value}}</td>
-                </tr>
-                <tr v-for="val in fillBlank_skill">
-                  <th></th>
-                  <td></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <table id="chat-table" class="secret-table">
-            <thead>
-              <tr>
-                <th>✕</th>
-                <th>s</th>
-                <th>chat palette</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr 
-                v-for="(dic,index) in refChatList"
-                :draggable="true"
-                :class="index === dragIndex && dragTarget===refChatList ? 'dragging' : null"
-                @dragstart="dragStart(index, refChatList)"
-                @dragenter="dragEnter(index, refChatList)"
-                @dragover.prevent
-                @dragend="dragEnd"
-              >
-                <td><input type="checkbox" v-model="dic.del"></td>
-                <td><input type="checkbox" v-model="dic.secret"></td>
-                <td :class="{disable: dic.del}" @click="dic.del=!dic.del">
-                  {{dic.times}}{{dic.secret ? 's' : ''}}{{dic.text}}
-                </td>
-              </tr>
-              <tr v-for="val in fillBlank_chat">
-                <td></td>
-                <td></td>
-                <td></td>
-              </tr>
-            </tbody>
-          </table>
-
-          <div class="setting-wrapper" style="font-size: 0.9rem;column-gap: 0.75rem;height: fit-content;margin-block: 0.25rem 0;margin-inline-start: -1rem;">
-            <template v-for="data in chatTargets" :key="data.id">
-              <span>{{data.label}}</span>
-              <toggle-button style="--color:lightsalmon"
-                :is-checked = "data.value" @checked-toggle = "value => data.value=value"
-              ></toggle-button>
-            </template>
-          </div>
-
-        </div>
-      </section>
-
+          <pre style="text-align: center;margin-block-end: unset;white-space: pre-wrap;">
+    当サイトは、「株式会社アークライト」及び「株式会社KADOKAWA」が権利を有する『クトゥルフ神話TRPG』シリーズの二次創作物です。
+    Call of Cthulhu is copyright ©1981, 2015, 2019 by Chaosium Inc. ;all rights reserved. Arranged by Arclight Inc. Call of Cthulhu is a registered trademark of Chaosium Inc.
+    PUBLISHED BY KADOKAWA CORPORATION 「クトゥルフ神話TRPG」「新クトゥルフ神話TRPG」</pre>
+        </footer>
+      </div>
     </main>
 
-    <footer>
-      <div class="footer-content">
-        <div>
-          <h2>CONTACT</h2>
-          <span style="font-size: larger;">セイル</span>
-          <br>
-          Booth: https://seils.booth.pm/
-          <br>
-          X(旧Twitter): @seilor0
-        </div>
-        <div>
-          <h2>CAUTION</h2>
-          <ul>
-            <li>
-              作業環境：Windows11 / Google Chrome
-              <br>
-              上記以外の環境はテストしていないため、不具合が出る可能性があります。
-            </li>
-            <li>
-              当サイトの利用によるいかなるトラブルも作者は責任を負いません。
-              <br>
-              ご利用は自己責任にてお願いいたします。
-            </li>
-            <li>
-              何かあれば左の連絡先までご連絡ください。
-            </li>
-          </ul>
-        </div>
-        <div>
-          <h2>UPDATE</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>date</th>
-                <th>version</th>
-                <th>detail</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
-      <pre style="text-align: center;margin-block-end: unset;white-space: pre-wrap;">
-当サイトは、「株式会社アークライト」及び「株式会社KADOKAWA」が権利を有する『クトゥルフ神話TRPG』シリーズの二次創作物です。
-Call of Cthulhu is copyright ©1981, 2015, 2019 by Chaosium Inc. ;all rights reserved. Arranged by Arclight Inc. Call of Cthulhu is a registered trademark of Chaosium Inc.
-PUBLISHED BY KADOKAWA CORPORATION 「クトゥルフ神話TRPG」「新クトゥルフ神話TRPG」</pre>
-    </footer>
-
-    <div class="button-wrap">
-      <button class="export" style="background-color: #418660;" @click="exportUnit">
-        ココフォリア<br>コマ出力
-      </button>
-      <button class="export" @click="copy2clipboard($event.currentTarget, getChatpalette())">
-        チャパレ出力
-      </button>
-    </div>
-
-    <dialog id="modal-how2use" closedby="any">
-      <header>
-        <h2>このサイトについて</h2>
-        <button-css-icon icon-name="icon-close" command="close" commandfor="modal-how2use"></button-css-icon>
-      </header>
-      <section>
+    <basic-dialog id="modal-how2use">
+      <template #header>このサイトについて</template>
+      <template #content>
         <p>
           CoC6版 / 7版のココフォリア用の<br>
           キャラコマを作れるサイトです。<br>
@@ -309,15 +315,12 @@ PUBLISHED BY KADOKAWA CORPORATION 「クトゥルフ神話TRPG」「新クトゥ
         <p>
           入力の手数を極力省くことを目的に作りました。
         </p>
-      </section>
-    </dialog>
+      </template>
+    </basic-dialog>
 
-    <dialog id="modal-useful" closedby="any">
-      <header>
-        <h2>便利機能</h2>
-        <button-css-icon icon-name="icon-close" command="close" commandfor="modal-useful"></button-css-icon>
-      </header>
-      <section>
+    <basic-dialog id="modal-useful">
+      <template #header>便利機能</template>
+      <template #content>
         <div>
           <p class="title">並び替え</p>
           <p style="margin-block: 0.5em;">
@@ -326,7 +329,7 @@ PUBLISHED BY KADOKAWA CORPORATION 「クトゥルフ神話TRPG」「新クトゥ
             並び替えることができます
           </p>
           <p>対象：</p>
-          <div class="graybox">
+          <div class="gray-box">
             <ul>
               <li>技能</li>
               <li>チャパレ</li>
@@ -343,7 +346,7 @@ PUBLISHED BY KADOKAWA CORPORATION 「クトゥルフ神話TRPG」「新クトゥ
             別個に設定できます
           </p>
           <p>対象：</p>
-          <div class="graybox">
+          <div class="gray-box">
             <ul>
               <li>パラメータ</li>
               <li>ステータス</li>
@@ -352,73 +355,72 @@ PUBLISHED BY KADOKAWA CORPORATION 「クトゥルフ神話TRPG」「新クトゥ
             </ul>
           </div>
         </div>
-      </section>
-    </dialog>
+      </template>
+    </basic-dialog>
 
-    <dialog id="modal-dice-setting" closedby="any">
-      <header>
-        <h2>チャパレ設定</h2>
-        <button-css-icon icon-name="icon-close" command="close" commandfor="modal-dice-setting"></button-css-icon>
-      </header>
-      <section class="setting-wrapper" style="width: 22rem;">
-        <span>システム</span>
-        <toggle-button :top-is-slider="true"
-          :is-checked="setting.is6th" @checked-toggle="value => setting.is6th=value"
-          text-checked="CoC6th" text-not-checked="CoC7th"
-        ></toggle-button>
-        <span>判定ダイス</span>
-        <select v-model="setting.dice">
-          <option value="CC">CC</option>
-          <option value="CCB">CCB</option>
-          <option value="1d100">1d100</option>
-        </select>
-        <span>形式</span>
-        <select v-model="setting.rollStyle">
-          <option value="normal">{{setting.dice}}&lt;=70 【...】</option>
-          <option value="secret">s{{setting.dice}}&lt;=70 【...】</option>
-          <option value="@">{{setting.dice}} 【...】@70</option>
-        </select>
-        <span></span>
-        <div class="setting-wrapper" style="margin: 0;column-gap: 0.5rem;">
-          <span>単体ダイス</span>
-          <toggle-button :top-is-slider="true"
-            :is-checked="setting.secretSingleDice" @checked-toggle="value => setting.secretSingleDice=value"
-            text-checked="シークレット" text-not-checked="オープン"
-          ></toggle-button>
-          <span>choice</span>
-          <toggle-button :top-is-slider="true"
-            :is-checked="setting.secretChoice" @checked-toggle="value => setting.secretChoice=value"
-            text-checked="シークレット" text-not-checked="オープン"
-          ></toggle-button>
+    <basic-dialog id="modal-dice-setting">
+      <template #header>チャパレ設定</template>
+      <template #content>
+        <div class="setting-div" style="width: 22rem;">
+          <span>システム</span>
+          <toggle-button :top-is-slider="true" :is-checked="setting.is6th" @checked-toggle="value => setting.is6th=value">
+            <template #checked>CoC6th</template>
+            <template #not-checked>CoC7th</template>
+          </toggle-button>
+
+          <span>判定ダイス</span>
+          <select v-model="setting.dice">
+            <option value="CC">CC</option>
+            <option value="CCB">CCB</option>
+            <option value="1d100">1d100</option>
+          </select>
+
+          <span>形式</span>
+          <select v-model="setting.rollStyle">
+            <option value="normal">{{setting.dice}}&lt;=70 【...】</option>
+            <option value="secret">s{{setting.dice}}&lt;=70 【...】</option>
+            <option value="@">{{setting.dice}} 【...】@70</option>
+          </select>
+
+          <span></span>
+          <div class="setting-div" style="margin: 0;column-gap: 0.5rem;">
+            <span>単体ダイス</span>
+            <toggle-button :top-is-slider="true" :is-checked="setting.secretSingleDice" @checked-toggle="value => setting.secretSingleDice=value">
+              <template #checked>シークレット</template>
+              <template #not-checked>オープン</template>
+            </toggle-button>
+            <span>choice</span>
+            <toggle-button :top-is-slider="true" :is-checked="setting.secretChoice" @checked-toggle="value => setting.secretChoice=value">
+              <template #checked>シークレット</template>
+              <template #not-checked>オープン</template>              
+            </toggle-button>
+          </div>
         </div>
-      </section>
-    </dialog>
+      </template>
+    </basic-dialog>
 
-    <dialog id="modal-unit-setting" closedby="any">
-      <header>
-        <h2>キャラコマ設定</h2>
-        <button-css-icon icon-name="icon-close" command="close" commandfor="modal-unit-setting"></button-css-icon>
-      </header>
-      <section style="max-width: 22rem;">
-        <div class="setting-wrapper">
+    <basic-dialog id="modal-unit-setting" section-style="max-width: 22rem;">
+      <template #header>キャラコマ設定</template>
+      <template #content>
+        <div class="setting-div">
           <span>ステータス</span>
-          <toggle-button :top-is-slider="true"
-            :is-checked="setting.secretUnit" @checked-toggle="value=>setting.secretUnit=value"
-            text-checked="秘匿" text-not-checked="公開"
-          ></toggle-button>
+          <toggle-button :top-is-slider="true" :is-checked="setting.secretUnit" @checked-toggle="value=>setting.secretUnit=value">
+            <template #checked>秘匿</template>
+            <template #not-checked>公開</template>
+          </toggle-button>
           <span>発言アイコン</span>
-          <toggle-button :top-is-slider="true"
-            :is-checked="setting.invisibleUnit" @checked-toggle="value=>setting.invisibleUnit=value"
-            text-checked="非表示" text-not-checked="表示"
-          ></toggle-button>
+          <toggle-button :top-is-slider="true" :is-checked="setting.invisibleUnit" @checked-toggle="value=>setting.invisibleUnit=value">
+            <template #checked>非表示</template>
+            <template #not-checked>表示</template>
+          </toggle-button>
           <span>コマ一覧</span>
-          <toggle-button :top-is-slider="true"
-            :is-checked="setting.hideUnit" @checked-toggle="value=>setting.hideUnit=value"
-            text-checked="非表示" text-not-checked="表示"
-          ></toggle-button>
+          <toggle-button :top-is-slider="true" :is-checked="setting.hideUnit" @checked-toggle="value=>setting.hideUnit=value">
+            <template #checked>非表示</template>
+            <template #not-checked>表示</template>
+          </toggle-button>
         </div>
         <hr>
-        <div class="setting-wrapper">
+        <div class="setting-div">
           <span>発言カラー</span>
           <div style="display: grid;grid-template-columns: auto auto 1fr;gap: 0.5rem;align-items: center;">
             <input type="color" v-model="setting.color">
@@ -433,22 +435,19 @@ PUBLISHED BY KADOKAWA CORPORATION 「クトゥルフ神話TRPG」「新クトゥ
           <span>差分<span style="font-size: smaller;"> (ラベル)</span></span>
           <textarea :value="setting.faces?.join('\n')" @change="e => setting.faces = e.currentTarget.value.split('\n').filter(Boolean).map(row=>(row.startsWith('@')?'':'@')+row)"></textarea>
         </div>
-      </section>
-    </dialog>
+      </template>
+    </basic-dialog>
 
-    <dialog id="modal-import-unit" closedby="any">
-      <header>
-        <h2>ココフォリアコマをインポート</h2>
-        <button-css-icon icon-name="icon-close" command="close" commandfor="modal-import-unit"></button-css-icon>
-      </header>
-      <section>
+    <basic-dialog id="modal-import-unit">
+      <template #header>ココフォリアコマをインポート</template>
+      <template #content>
         <textarea style="width: 20rem;max-height: 20rem;min-height: 6rem;" placeholder="コマを貼り付け" @change="importUnit"></textarea>
-        <toggle-button :top-is-slider="false" style="display: flex;justify-content: flex-end;"
-          :is-checked="setting.importUnitSetting" @checked-toggle="value=>setting.importUnitSetting=value"
-          text-checked="数値 & コマ設定をインポート" text-not-checked="数値のみインポート"
-        ></toggle-button>
-      </section>
-    </dialog>
+        <toggle-button style="display: flex;justify-content: flex-end;" :is-checked="setting.importUnitSetting" @checked-toggle="value=>setting.importUnitSetting=value">
+          <template #checked>数値 & コマ設定をインポート</template>
+          <template #not-checked>数値のみインポート</template>
+        </toggle-button>
+      </template>
+    </basic-dialog> 
   </div>
   
   <script type="module" src="./code_vue.js"></script>
