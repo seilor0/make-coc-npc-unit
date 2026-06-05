@@ -60,7 +60,7 @@ const rootApp = createApp({
     /**
      * 技能テーブル用の情報を格納しておくリスト
      * { id, type, name, value, times, noname }
-     * @type {Array}
+     * @type {{ id, type, name, value, times, noname }[]}
      * @type 判定の種類\n
      *  - choice : チョイス
      *  - roll : 通常の判定

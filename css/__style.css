@@ -27,12 +27,12 @@
 /*        || event        */
 /* ---------------------- */
 @layer state {
-  .disable {
+  .is-disabled {
     color: rgb(0 0 0 /0.33);
     text-decoration: line-through;
   }
   
-  .dragging :is(th,td) {
+  .is-dragging :is(th,td) {
     background-color: lightsalmon;
   }
 }
