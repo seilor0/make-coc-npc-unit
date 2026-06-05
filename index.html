@@ -125,7 +125,7 @@
                     <button-css-icon icon-name="icon-minus" class="invert-el shadow" @click="deleteRow('params')"></button-css-icon>
                   </caption>
                   <tbody>
-                    <tr v-for="[key,dic] in defStats.params" :key="dic.id" :class="{disable: dic.del}" @click="dic.del=!dic.del">
+                    <tr v-for="[key,dic] in defStats.params" :key="dic.id" :class="{'is-disabled': dic.del}" @click="dic.del=!dic.del">
                       <td><input type="checkbox" v-model="dic.del"></td>
                       <th>{{key}}</th>
                       <td>{{dic.value}}</td>
@@ -134,7 +134,7 @@
                       v-for="(param, index) in exStats.params" 
                       :key="param.id"
                       :draggable="true"
-                      :class="index===dragIndex && dragTarget===exStats.params ? 'dragging' : null"
+                      :class="{'is-dragging': index===dragIndex && dragTarget===exStats.params}"
                       @dragstart="dragStart(index, exStats.params)"
                       @dragenter="dragEnter(index, exStats.params)"
                       @dragover.prevent
@@ -154,7 +154,7 @@
                     <button-css-icon icon-name="icon-minus" class="invert-el shadow" @click="deleteRow('stats')"></button-css-icon> 
                   </caption>
                   <tbody>
-                    <tr v-for="[key,dic] in defStats.stats" :key="dic.id" :class="{disable: dic.del}" @click="dic.del=!dic.del">
+                    <tr v-for="[key,dic] in defStats.stats" :key="dic.id" :class="{'is-disabled': dic.del}" @click="dic.del=!dic.del">
                       <td><input type="checkbox" v-model="dic.del"></td>
                       <th>{{key}}</th>
                       <td>{{dic.value}}</td>
@@ -163,7 +163,7 @@
                       v-for="(stat,index) in exStats.stats" 
                       :key="stat.id"
                       :draggable="true"
-                      :class="index === dragIndex && dragTarget===exStats.stats ? 'dragging' : null"
+                      :class="{'is-dragging': index === dragIndex && dragTarget===exStats.stats}"
                       @dragstart="dragStart(index, exStats.stats)"
                       @dragenter="dragEnter(index, exStats.stats)"
                       @dragover.prevent
@@ -193,13 +193,13 @@
                       v-for="(dic,index) in skillList" 
                       :key="dic.id"
                       :draggable="true"
-                      :class="index === dragIndex && dragTarget===skillList ? 'dragging' : null"
+                      :class="{'is-dragging': index === dragIndex && dragTarget===skillList}"
                       @dragstart="dragStart(index, skillList)"
                       @dragenter="dragEnter(index, skillList)"
                       @dragover.prevent
                       @dragend="dragEnd"
                     >
-                      <th :class="{disable : dic.noname}" @click="dic.noname = !dic.noname">
+                      <th :class="{'is-disabled' : dic.noname}" @click="dic.noname = !dic.noname">
                         {{dic.times ? `x${dic.times} ` : ''}}{{dic.name}}
                       </th>
                       <td>{{dic.value}}</td>
@@ -224,7 +224,7 @@
                   <tr 
                     v-for="(dic,index) in refChatList"
                     :draggable="true"
-                    :class="index === dragIndex && dragTarget===refChatList ? 'dragging' : null"
+                    :class="{'is-dragging': index === dragIndex && dragTarget===refChatList}"
                     @dragstart="dragStart(index, refChatList)"
                     @dragenter="dragEnter(index, refChatList)"
                     @dragover.prevent
@@ -232,7 +232,7 @@
                   >
                     <td><input type="checkbox" v-model="dic.del"></td>
                     <td><input type="checkbox" v-model="dic.secret"></td>
-                    <td :class="{disable: dic.del}" @click="dic.del=!dic.del">
+                    <td :class="{'is-disabled': dic.del}" @click="dic.del=!dic.del">
                       {{dic.times}}{{dic.secret ? 's' : ''}}{{dic.text}}
                     </td>
                   </tr>
