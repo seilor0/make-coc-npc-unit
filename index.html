@@ -59,7 +59,7 @@
           <section style="width: 23rem;">
             <hgroup style="margin-block-end: 1.5rem;">
               <h2 style="flex-grow: 1;">入力</h2>
-              <button class="invert-el shadow" command="show-modal" commandfor="modal-import-unit">
+              <button class="invert-el shadow" command="show-modal" commandfor="import-unit-dialog">
                 <google-icon>input</google-icon>
                 インポート
               </button>        
@@ -426,7 +426,7 @@
       </template>
     </basic-dialog>
 
-    <basic-dialog id="modal-import-unit">
+    <basic-dialog id="import-unit-dialog">
       <template #header>ココフォリアコマをインポート</template>
       <template #content>
         <textarea style="width: 20rem;max-height: 20rem;min-height: 6rem;" placeholder="コマを貼り付け" @change="importUnit"></textarea>
