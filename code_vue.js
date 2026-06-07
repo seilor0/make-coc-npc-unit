@@ -151,8 +151,7 @@ const rootApp = createApp({
     function updateDefStats () {
       // status欄のテキストを取得・整形
       const text = [
-        [/　/g, ' '],
-        [/\n/g, ''],
+        [/[　 \n]/g, ''],
         [/[！-｝]/g, (s)=>String.fromCharCode(s.charCodeAt(0)-0xFEE0)]
       ].reduce((acc, cur) => acc.replaceAll(cur[0], cur[1]), document.getElementById('stats').value);
 
