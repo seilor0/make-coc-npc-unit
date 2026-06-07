@@ -407,52 +407,53 @@
 
 /* table */
 @layer component {
-  caption {
-    text-align: left;
-    font-size: calc(1rem - 1px);
-    font-weight: 500;
-    margin-block-end: 0.25rem;
-    user-select: none;
-  }
-  caption button {margin-inline-start: 4px;}
-  
-  table {
-    border-spacing: 0 0.25rem;
-    font-size: small;
-    letter-spacing: 0.5px;
-  }
-  
-  tr {height: 1.5rem;}
-  
-  th,td {
-    font-weight: 500;
-    padding: 0.25rem;
-
-    &:has(input[type="text"],input[type="number"]) {padding:0;}
+  .l-content {
+    caption {
+      text-align: left;
+      font-size: calc(1rem - 1px);
+      font-weight: 500;
+      margin-block-end: 0.25rem;
+      user-select: none;
+    }
+    caption button {margin-inline-start: 4px;}
     
-    input[type="text"],
-    input[type="number"] {
-      background-color: transparent;
-      width: inherit;
+    table {
+      border-spacing: 0 0.25rem;
+      font-size: small;
+      letter-spacing: 0.5px;
+    }
+    
+    tr {height: 1.5rem;}
+    
+    th,td {
+      font-weight: 500;
       padding: 0.25rem;
-      border-width: 0;
-    }
-  }
   
-  tbody {
-    tr:nth-of-type(even) :is(th,td) {background-color: var(--cool-gray);}
-    th,td { border-block-end: 1px solid darkgray; }
-    th    { border-inline-end: 3px dotted hsl(from lightslategray h s l /33%); }
+      &:has(input[type="text"],input[type="number"]) {padding:0;}
+      
+      input[type="text"],
+      input[type="number"] {
+        background-color: transparent;
+        width: inherit;
+        padding: 0.25rem;
+        border-width: 0;
+      }
+    }
     
-    input[type='checkbox'] {
-      margin: 0;
-      margin-block-start: 0.25rem;
-      width: 1rem;
-      height: 1rem;
+    tbody {
+      tr:nth-of-type(even) :is(th,td) {background-color: var(--cool-gray);}
+      th,td { border-block-end: 1px solid darkgray; }
+      th    { border-inline-end: 3px dotted hsl(from lightslategray h s l /33%); }
+      
+      input[type='checkbox'] {
+        margin: 0;
+        margin-block-start: 0.25rem;
+        width: 1rem;
+        height: 1rem;
+      }
     }
+    table:not(:has(thead)) tr:first-child > * { border-block-start: 1px solid darkgray; }
   }
-  table:not(:has(thead)) tr:first-child > * { border-block-start: 1px solid darkgray; }
-  
 
   #skill-table {
     grid-column: 1 / -1;
