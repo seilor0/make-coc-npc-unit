@@ -617,7 +617,8 @@ const rootApp = createApp({
 
 
     onMounted(async () => {
-      const json = await fetch('./setting.json').then(res=>res.json());
+      const json = await fetch('./data/setting.json').then(res=>res.json());
+      const changeLogJson = await fetch('./data/change-log.json').then(res=>res.json());
 
       setting.value = structuredClone(json.setting);
       initSetting = structuredClone(json.setting);
@@ -626,8 +627,7 @@ const rootApp = createApp({
       document.getElementById('stats').placeholder = json.placeholder.stats.join('\n');
       document.getElementById('skills').placeholder = json.placeholder.skills.join('\n');
 
-      document.querySelector('footer table tbody').innerHTML = json.changeLog
-        .reduce((acc, cur) => acc += `<tr><td>${cur.date}</td><td>${cur.version}</td><td>${cur.detail}</td></tr>`, '');
+      document.querySelector('footer table tbody').innerHTML = changeLogJson.reduce((acc, cur) => acc += `<tr><td>${cur.date}</td><td>${cur.version}</td><td>${cur.detail}</td></tr>`, '');
     });
 
 

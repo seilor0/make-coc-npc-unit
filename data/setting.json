@@ -1,11 +1,4 @@
 {
-  "changeLog":[
-    {
-      "version":"1.0",
-      "date":"2026/02/17",
-      "detail":"サイト公開"
-    }
-  ],
   "placeholder":{
     "name": [
       "1行目：名前",
@@ -46,7 +39,7 @@
     "color": "#888888",
     "unitSize": 4,
     "faces": [],
-    "delChar": " :…「」『』【】〈〉\\[\\]《》≪≫",
+    "delChar": " …「」『』【】〈〉《》≪≫",
     "importUnitSetting": true
   }
 }
