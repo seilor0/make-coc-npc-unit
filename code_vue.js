@@ -86,60 +86,60 @@ const rootApp = createApp({
       /** @type {SkillData[]} */
       const baseArr = [];
 
-      chatTargets.value
-        .forEach((value, chatTarget) => {
+      // 差分
+      if (
+        chatTargets.value.get('差分') && 
+        setting.value.faces?.length
+      ) {
+        setting.value.faces.forEach(face => 
+          baseArr.push(new SkillData({ id: id++, type: 'line', value: face }))
+        );
+        baseArr.push(new SkillData({ id: id++, type: 'line', value: '===========' }));
+      }
+
+      // 正気度ロール
+      if (
+        chatTargets.value.get('SANc') &&
+        defStats.value.stats.get('SAN').value &&
+       !defStats.value.stats.get('SAN').isExcluded
+      ) {
+        baseArr.push(new SkillData({ id: id++, type: 'elseRoll', name: '正気度ロール', value: '1d100<={SAN}' }));
+      }
+
+      // アイデア・幸運・知識
+      if (chatTargets.value.get('知識etc.')) {
+        defStats.value.else.forEach((value, key) => {
           if (!value) return;
-
-          // 差分
-          if (chatTarget == '差分') {
-            if (!setting.value.faces?.length) return;
-            setting.value.faces.forEach(face => baseArr.push({ id: id++, type: 'line', value: face }));
-            baseArr.push(new SkillData({ id: id++, type: 'line', value: '===========' }));
-          }
-
-          // 正気度ロール
-          else if (chatTarget == 'SANc') {
-            if (!defStats.value.stats.get('SAN').value) return;
-            if ( defStats.value.stats.get('SAN').isExcluded) return;
-            baseArr.push(new SkillData({ id: id++, type: 'elseRoll', name: '正気度ロール', value: '1d100<={SAN}' }));
-          }
-
-          // アイデア・幸運・知識
-          else if (chatTarget == '知識etc.') {
-            defStats.value.else.forEach((value, key) => {
-              if (!value) return;
-              if (key=='幸運' && !setting.value.is6th && setting.value.rollStyle!='@') {
-                baseArr.push(new SkillData({ type: 'roll', name: '幸運', value: '{幸運}' }));
-              } else {
-                baseArr.push(new SkillData({ id: id++, type: 'roll', name: key, value: value }));
-              }
-            });
-          }
-
-          // 技能・判定
-          else if (chatTarget == '技能') {
-            baseArr.push(...skillList.value);
-          }
-
-          // 倍数ロール
-          else if (chatTarget == 'ステ*5') {
-            if (defStats.value.params.entries().find((value, key) => value.value && !value.isExcluded && key!=='DB')) {
-              baseArr.push(new SkillData({ id: id++, type: 'line', value: '===========' }));
-            }
-            
-            defStats.value.params.forEach((dic, key) => {
-              if (key==='DB') return;
-              if (!dic.value || dic.isExcluded) return;
-              const end = setting.value.is6th ? '*5' : '';
-              const value = setting.value.rollStyle=='@' ? dic.value * (setting.value.is6th?5:1) : `{${key}}${end}`;
-              baseArr.push(new SkillData({id: id++, type: 'roll', name: `${key}${end}`, value: value}));
-            });
+          if (key=='幸運' && !setting.value.is6th && setting.value.rollStyle!='@') {
+            baseArr.push(new SkillData({ id: id++, type: 'roll', name: '幸運', value: '{幸運}' }));
+          } else {
+            baseArr.push(new SkillData({ id: id++, type: 'roll', name: key, value: value }));
           }
         });
+      }
+
+      // 技能・判定
+      if (chatTargets.value.get('技能')) {
+        baseArr.push(...skillList.value);
+      }
+
+      // 倍数ロール
+      if (chatTargets.value.get('ステ*5')) {
+        if (defStats.value.params.entries().find((value, key) => value.value && !value.isExcluded && key!=='DB')) {
+          baseArr.push(new SkillData({ id: id++, type: 'line', value: '===========' }));
+        }
+        
+        defStats.value.params.forEach((dic, key) => {
+          if (key==='DB') return;
+          if (!dic.value || dic.isExcluded) return;
+          const end = setting.value.is6th ? '*5' : '';
+          const value = setting.value.rollStyle=='@' ? dic.value * (setting.value.is6th?5:1) : `{${key}}${end}`;
+          baseArr.push(new SkillData({id: id++, type: 'roll', name: `${key}${end}`, value: value}));
+        });
+      }
       
       // 集めた情報をチャパレ形式に変換
-      const chatDicArr = baseArr.map(skillData => skillData.createPaletteData(setting.value));
-      return chatDicArr;
+      return baseArr.map(skillData => skillData.createPaletteData(setting.value));
     });
     watch(chatList, () => refChatList.value = chatList.value);
 
