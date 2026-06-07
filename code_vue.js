@@ -3,6 +3,8 @@ import ButtonCssIcon from './components/button-css-icon.js'
 import ToggleButton from './components/toggle-button.js'
 import GoogleIcon from './components/google-icon.js';
 
+import { SkillData, PaletteData } from './components/-class.js';
+
 const { createApp, ref, computed, watch, onMounted } = Vue;
 
 
@@ -80,8 +82,8 @@ const rootApp = createApp({
       ]),
       else: new Map([
         ['アイデア', null],
-        ['幸運',     null],
-        ['知識',     null],
+        ['幸運', null],
+        ['知識', null],
       ]),
     });
     watch(() => setting.value.is6th, updateDefStats);
@@ -90,102 +92,7 @@ const rootApp = createApp({
     function addRow(key)    { exStats.value[key].push({ id: id++, label: '', value: '' }); }
     function deleteRow(key) { exStats.value[key].pop(); }
 
-
-    // ------------------------
-    //          class
-    // ------------------------
-    /**
-     * @type 判定の種類\n
-     *  - choice : チョイス
-     *  - roll : 通常の判定
-     *  - dice : 1d3など、振るダイスが直接記述されているもの
-     *  - elseRoll : 対抗ロール・正気度ロールなど、判定だが振るダイスが直接記述されているもの
-     *  - line : :HP+1, /scene, \@face など、そのままチャットに送るもの
-     * @name 技能名
-     * @value 技能値・判定部分のテキスト
-     * @times 繰り返す回数
-     * @isNoname 技能名をチャパレに表示しない設定
-     */
-    class SkillData {
-      constructor({
-        id = -1,
-        type = '',
-        name = '',
-        value = '',
-        times = null,
-        isNoname = false,
-      }={}) {
-        this.id = id;
-        this.type = type;
-        this.name = name;
-        this.value = value;
-        this.times = times;
-        this.isNoname = isNoname;
-      }
-
-      get timesText () {
-        return this.times ? `x${this.times} ` : '';
-      }
-
-      // method
-      getPaletteText (dice, rollStyle) {
-        const name = this.name && !this.isNoname ? ` 【${this.name}】` : '';
-        switch (this.type) {
-          case 'line':
-            return this.value;
-          case 'dice':
-          case 'choice':
-            return `${this.value}${name}`;
-          case 'elseRoll':
-            let value = this.value;
-            if      (dice=='CC')  value = value.replace(/(CBR|RES)B/i,'$1');
-            else if (dice=='CCB') value = value.replace(/(CBR|RES)([^B])/i,'$1B$2');
-            return `${value}${name}`;
-          case 'roll':
-            if (rollStyle=='@')
-              return `${dice}${name} @${this.value}`;
-            else
-              return `${dice}<=${this.value}${name}`;
-        }
-      }
-
-      createPaletteData (setting) {
-        const result = new PaletteData();
-        
-        if (
-          this.type==='dice'     && setting.secretSingleDice     ||
-          this.type==='choice'   && setting.secretChoice         ||
-          this.type==='roll'     && setting.rollStyle==='secret' ||
-          this.type==='elseRoll' && setting.rollStyle==='secret'
-        ) {
-          result.isSecret = true;
-        }
-        result.text = this.getPaletteText(setting.dice, setting.rollStyle);
-        result.timesText = this.timesText;
-
-        return result;
-      }
-    }
-
-    class PaletteData {
-      constructor({
-        timesText = '',
-        text = '',
-        isSecret = false,
-        isExcluded = false,
-      }={}) {
-        this.timesText = this.timesText;
-        this.text = text;
-        this.isSecret = isSecret;
-        this.isExcluded = isExcluded;
-      }
-    }
-
-
-    /**
-     * 技能テーブル用の情報を格納しておくリスト
-     * @type {SkillData[]}
-    */
+    /** @type {SkillData[]} */
     const skillList = ref([]);
 
     /** @type {PaletteData[]} */
