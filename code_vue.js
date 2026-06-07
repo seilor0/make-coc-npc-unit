@@ -15,9 +15,43 @@ const rootApp = createApp({
   },
   setup() {
     let id = 0;
-    let initSetting = {};
+    let initSetting = {
+      "is6th": true,
+      
+      "dice": "CCB",
+      "rollStyle": "@",
+      "secretSingleDice": false,
+      "secretChoice": false,
+    
+      "secretUnit": false,
+      "invisibleUnit": false,
+      "hideUnit": false,
+    
+      "color": "#888888",
+      "unitSize": 4,
+      "faces": [],
+      "delChar": " …「」『』【】〈〉《》≪≫",
+      "importUnitSetting": true
+    };
 
-    const setting = ref({});
+    const setting = ref({
+      "is6th": true,
+      
+      "dice": "CCB",
+      "rollStyle": "@",
+      "secretSingleDice": false,
+      "secretChoice": false,
+    
+      "secretUnit": false,
+      "invisibleUnit": false,
+      "hideUnit": false,
+    
+      "color": "#888888",
+      "unitSize": 4,
+      "faces": [],
+      "delChar": " …「」『』【】〈〉《》≪≫",
+      "importUnitSetting": true
+    });
 
     const chatTargets = ref(new Map([
       ['差分', true],
@@ -126,7 +160,6 @@ const rootApp = createApp({
         ) {
           result.isSecret = true;
         }
-
         result.text = this.getPaletteText(setting.dice, setting.rollStyle);
         result.timesText = this.timesText;
 
@@ -154,13 +187,15 @@ const rootApp = createApp({
      * @type {SkillData[]}
     */
     const skillList = ref([]);
+
     /** @type {PaletteData[]} */
     const refChatList = ref([]);
     
     /** @type {PaletteData[]} */
     const chatList = computed(() => {
+      
       /** @type {SkillData[]} */
-      const rawDicArr = [];
+      const baseArr = [];
 
       chatTargets.value
         .forEach((value, chatTarget) => {
@@ -169,35 +204,38 @@ const rootApp = createApp({
           // 差分
           if (chatTarget == '差分') {
             if (!setting.value.faces?.length) return;
-            setting.value.faces.forEach(face => rawDicArr.push({ id: id++, type: 'line', value: face }));
-            rawDicArr.push(new SkillData({ id: id++, type: 'line', value: '===========' }));
+            setting.value.faces.forEach(face => baseArr.push({ id: id++, type: 'line', value: face }));
+            baseArr.push(new SkillData({ id: id++, type: 'line', value: '===========' }));
           }
 
           // 正気度ロール
           else if (chatTarget == 'SANc') {
             if (!defStats.value.stats.get('SAN').value) return;
             if ( defStats.value.stats.get('SAN').isExcluded) return;
-            rawDicArr.push(new SkillData({ id: id++, type: 'elseRoll', name: '正気度ロール', value: '1d100<={SAN}' }));
+            baseArr.push(new SkillData({ id: id++, type: 'elseRoll', name: '正気度ロール', value: '1d100<={SAN}' }));
           }
 
           // アイデア・幸運・知識
           else if (chatTarget == '知識etc.') {
             defStats.value.else.forEach((dic, key) => {
               if (!dic.value) return;
-              if (key=='幸運' && !setting.value.is6th && setting.value.rollStyle!='@') rawDicArr.push(new SkillData({ type: 'roll', name: '幸運', value: '{幸運}' }));
-              else rawDicArr.push(new SkillData({ id: id++, type: 'roll', name: key, value: dic.value }));
+              if (key=='幸運' && !setting.value.is6th && setting.value.rollStyle!='@') {
+                baseArr.push(new SkillData({ type: 'roll', name: '幸運', value: '{幸運}' }));
+              } else {
+                baseArr.push(new SkillData({ id: id++, type: 'roll', name: key, value: dic.value }));
+              }
             });
           }
 
           // 技能・判定
           else if (chatTarget == '技能') {
-            rawDicArr.push(...skillList.value);
+            baseArr.push(...skillList.value);
           }
 
           // 倍数ロール
           else if (chatTarget == 'ステ*5') {
             if (defStats.value.params.entries().find((value, key) => value.value && !value.isExcluded && key!=='DB')) {
-              rawDicArr.push(new SkillData({ id: id++, type: 'line', value: '===========' }));
+              baseArr.push(new SkillData({ id: id++, type: 'line', value: '===========' }));
             }
             
             defStats.value.params.forEach((dic, key) => {
@@ -205,13 +243,13 @@ const rootApp = createApp({
               if (!dic.value || dic.isExcluded) return;
               const end = setting.value.is6th ? '*5' : '';
               const value = setting.value.rollStyle=='@' ? dic.value * (setting.value.is6th?5:1) : `{${key}}${end}`;
-              rawDicArr.push(new SkillData({id: id++, type: 'roll', name: `${key}${end}`, value: value}));
+              baseArr.push(new SkillData({id: id++, type: 'roll', name: `${key}${end}`, value: value}));
             });
           }
         });
       
       // 集めた情報をチャパレ形式に変換
-      const chatDicArr = rawDicArr.map(dic => dic.createPaletteData(setting.value));
+      const chatDicArr = baseArr.map(skillData => skillData.createPaletteData(setting.value));
       return chatDicArr;
     });
     watch(chatList, () => refChatList.value = chatList.value);
@@ -321,73 +359,80 @@ const rootApp = createApp({
         if (/^@|^:|^\/(?:scene|save|load|pdf|var|play|roll-table|omikuji)/i.test(base)) {
           dic.type = 'line';
           dic.value = base;
-
-          // choice
-        } else if (base.indexOf('choice') > -1) {
+        }
+        
+        // choice
+        else if (base.indexOf('choice') > -1) {
           const choice = base.match(/choice\d*(?:\[.+\]|\(.+\)| .+)/i)?.[0];
           if (!choice) return;
           dic.type = 'choice';
           dic.name = base.replace(choice, '').trim();
           dic.value = choice;
-
-        } else if (base.indexOf('チョイス') > -1) {
+        }
+        else if (base.indexOf('チョイス') > -1) {
           const {choice, cTimes, option} = base.match(/(?<choice>チョイス(?<cTimes>\d*) *(?<option>.+))/i)?.groups || {choice:'', cTimes:null, option:null};
           if (!choice) return;
           const value = `choice${cTimes}[${option.split(/[,、， ]/).filter(Boolean).join(',')}]`;
           dic.type = 'choice';
           dic.name = base.replace(choice, '').trim();
           dic.value = value;
+        }
 
-          // 組み合わせロール
-        } else if (/CBR/i.test(base)) {
+        // 組み合わせロール
+        else if (/CBR/i.test(base)) {
           const {val, val1, val2} = base.match(/(?<val>CBRB?\D*(?<val1>\d+)\D+(?<val2>\d+)\)?)/i)?.groups || {val:'', val1:null, val2:null};
           if (!val1 || !val2) return;
           dic.type = 'elseRoll';
           dic.name = base.replace(val, '');
           dic.value = `CBR(${val1},${val2})`;
-          
-          // 対抗ロール
-        } else if (/RES/i.test(base)) {
+        }
+
+        // 対抗ロール
+        else if (/RES/i.test(base)) {
           const {val, val1, val2} = base.match(/(?<val>RESB?\D*(?<val1>\d+)\D+(?<val2>\d+)\)?)/i)?.groups || {val:'', val1:null, val2:null};
           if (!val1 || !val2) return;
           dic.type = 'elseRoll';
           dic.name = base.replace(val, '');
           dic.value = `RES(${val1}-${val2})`;
-
-          // CCB<=70 skill
-        } else if (/(?:1d100|CCB?)<=/i.test(base)) {
-          const {value, name} = base.match(new RegExp(`<=(?<value>${dicePattern}) *(?<name>.*)`, 'i'))?.groups || {value:null, name:''};
+        }
+        
+        // CCB<=70 skill
+        else if (/(?:1d100|CCB?)<=/i.test(base)) {
+          const {value, name} = base.match(new RegExp(`<=(?<value>${dicePattern}) *(?<name>.*)`, 'i'))?.groups || {};
           if(!value) return;
           dic.type = 'roll';
-          dic.name = name;
-          dic.value = value;
-
-          // CCB skill @70
-        } else if (/(?:1d100|CCB?).*@\d+$/i.test(base)) {
-          const {name, value} = base.match(/(?:1d100|CCB?) *(?<name>.*) *@(?<value>\d+)$/i)?.groups || {name:'', value:null};
+          dic.name = name ?? '';
+          dic.value = value ?? null;
+        }
+        
+        // CCB skill @70
+        else if (/(?:1d100|CCB?).*@\d+$/i.test(base)) {
+          const {name, value} = base.match(/(?:1d100|CCB?) *(?<name>.*?) *@(?<value>\d+)$/i)?.groups || {};
           dic.type = 'roll';
-          dic.name = name;
-          dic.value = value;
+          dic.name = name ?? '';
+          dic.value = value ?? null;
+        }
 
-          // 1d3
-        } else if (/\dD\d/i.test(base)) {
+        // 1d3
+        else if (/\dD\d/i.test(base)) {
           let value = base.match(new RegExp(dicePattern, 'i'))[0];
           const name = base.replace(value, '').trim();
           value = value.replace(/\/1$/i, '').replace(/\{?db\}?/gi, '{DB}');
           dic.type = 'dice';
           dic.name = name;
           dic.value = value;
+        }
 
-          // skill 70
-        } else {
-          const {name, value} = base.match(new RegExp(`(?<name>.*?)(?<value>${dicePattern})\\D*$`, 'i'))?.groups || {name:'', value:null};
+        // skill 70
+        else {
+          const {name, value} = base.match(new RegExp(`(?<name>.*?)(?<value>${dicePattern})\\D*$`, 'i'))?.groups || {};
           if (!value) {
             console.log(`Not add to chat-palette : ${base}`);
             return;
           }
           dic.type = 'roll';
-          dic.name = name;
-          dic.value = value;
+          dic.name = name ?? '';
+          dic.value = value ?? null;
         }
 
         dic.name = [['(', '（'], [')', '）'], [':','：']].reduce((acc, cur) => acc.replaceAll(cur[0], cur[1]), dic.name);
