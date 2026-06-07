@@ -236,7 +236,7 @@
                       {{dic.timesText}}{{dic.isSecret ? 's' : ''}}{{dic.text}}
                     </td>
                   </tr>
-                  <tr v-for="val in fillLength_chat">
+                  <tr v-for="val in Math.max(17 - refChatList.length, 0)">
                     <td></td>
                     <td></td>
                     <td></td>

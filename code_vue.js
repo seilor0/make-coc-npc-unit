@@ -114,6 +114,24 @@ const rootApp = createApp({
               return `${dice}<=${this.value}${name}`;
         }
       }
+
+      createPaletteData (setting) {
+        const result = new PaletteData();
+        
+        if (
+          this.type==='dice'     && setting.secretSingleDice     ||
+          this.type==='choice'   && setting.secretChoice         ||
+          this.type==='roll'     && setting.rollStyle==='secret' ||
+          this.type==='elseRoll' && setting.rollStyle==='secret'
+        ) {
+          result.isSecret = true;
+        }
+
+        result.text = this.getPaletteText(setting.dice, setting.rollStyle);
+        result.timesText = this.timesText;
+
+        return result;
+      }
     }
 
     class PaletteData {
@@ -141,9 +159,9 @@ const rootApp = createApp({
     
     /** @type {PaletteData[]} */
     const chatList = computed(() => {
-      // まずはdic形式で情報を集める
       /** @type {SkillData[]} */
       const rawDicArr = [];
+
       chatTargets.value
         .forEach((value, chatTarget) => {
           if (!value) return;
@@ -191,48 +209,9 @@ const rootApp = createApp({
             });
           }
         });
-
+      
       // 集めた情報をチャパレ形式に変換
-      const chatDicArr = rawDicArr.map(dic => {
-        const result = new PaletteData();
-        // const result = {del:false, secret:false, text:'', times:''};
-        
-        if (
-          dic.type==='dice'     && setting.value.secretSingleDice     ||
-          dic.type==='choice'   && setting.value.secretChoice         ||
-          dic.type==='roll'     && setting.value.rollStyle==='secret' ||
-          dic.type==='elseRoll' && setting.value.rollStyle==='secret'
-        ) {
-          result.isSecret = true;
-          // result.secret = true;
-        }
-
-        result.text = dic.getPaletteText(setting.value.dice, setting.value.rollStyle);
-        // const dic2text = (dic) => {
-        //   const name = dic.name && !dic.noname ? ` 【${dic.name}】` : '';
-        //   switch (dic.type) {
-        //     case 'line':
-        //       return dic.value;
-        //     case 'dice':
-        //     case 'choice':
-        //       return `${dic.value}${name}`;
-        //     case 'elseRoll':
-        //       let value = dic.value;
-        //       if      (setting.value.dice=='CC')  value = value.replace(/(CBR|RES)B/i,'$1');
-        //       else if (setting.value.dice=='CCB') value = value.replace(/(CBR|RES)([^B])/i,'$1B$2');
-        //       return `${value}${name}`;
-        //     case 'roll':
-        //       if (setting.value.rollStyle=='@') return `${setting.value.dice}${name} @${dic.value}`;
-        //       else return `${setting.value.dice}<=${dic.value}${name}`;
-        //   }
-        // };
-        // result.text = dic2text(dic);
-        result.timesText = dic.timesText;
-        // result.timesText = dic.times ? `x${dic.times} ` : '';
-
-        return result;
-      });
-
+      const chatDicArr = rawDicArr.map(dic => dic.createPaletteData(setting.value));
       return chatDicArr;
     });
     watch(chatList, () => refChatList.value = chatList.value);
