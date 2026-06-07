@@ -232,7 +232,7 @@
     height: max-content;
   }
 
-  #modal-useful section {
+  #useful-dialog section {
     padding: 1.5rem;
     display: flex;
     gap: 1.5rem;

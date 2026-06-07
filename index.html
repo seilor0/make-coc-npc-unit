@@ -39,15 +39,15 @@
             チャパレ出力
           </button>
 
-          <button class="round-button invert-el" command="show-modal" commandfor="modal-dice-setting">
+          <button class="round-button invert-el" command="show-modal" commandfor="dice-setting-dialog">
             <google-icon style="font-variation-settings: 'FILL' 1, 'opsz' 20;">settings</google-icon>
             チャパレ設定
           </button>
-          <button class="round-button invert-el" command="show-modal" commandfor="modal-unit-setting">
+          <button class="round-button invert-el" command="show-modal" commandfor="unit-setting-dialog">
             <google-icon style="font-variation-settings: 'FILL' 1, 'opsz' 20;">settings</google-icon>
             コマ設定
           </button>
-          <button class="round-button invert-el" command="show-modal" commandfor="modal-useful">
+          <button class="round-button invert-el" command="show-modal" commandfor="useful-dialog">
             便利機能
           </button>
         </div>
@@ -306,7 +306,7 @@
     </main>
 
 
-    <basic-dialog id="modal-useful">
+    <basic-dialog id="useful-dialog">
       <template #header>便利機能</template>
       <template #content>
         <div>
@@ -346,7 +346,7 @@
       </template>
     </basic-dialog>
 
-    <basic-dialog id="modal-dice-setting">
+    <basic-dialog id="dice-setting-dialog">
       <template #header>チャパレ設定</template>
       <template #content>
         <div class="setting-div" style="width: 22rem;">
@@ -387,7 +387,7 @@
       </template>
     </basic-dialog>
 
-    <basic-dialog id="modal-unit-setting" section-style="max-width: 22rem;">
+    <basic-dialog id="unit-setting-dialog" section-style="max-width: 22rem;">
       <template #header>キャラコマ設定</template>
       <template #content>
         <div class="setting-div">
