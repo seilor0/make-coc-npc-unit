@@ -43,6 +43,7 @@
     "befBracket": "【",
     "afBracket": "】",
     "separator": "===========",
+    "statusIsInvert": false,
     "importUnitSetting": true
   }
 }

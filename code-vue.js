@@ -35,6 +35,7 @@ const rootApp = createApp({
       "befBracket": "【",
       "afBracket": "】",
       "separator": "===========",
+      "statusIsInvert": false,
       "importUnitSetting": true
     });
 
@@ -158,22 +159,119 @@ const rootApp = createApp({
     }
 
     function updateDefStats () {
-      // status欄のテキストを取得・整形
-      const text = [
-        [/[　 \n]/g, ''],
-        [/[！-｝]/g, (s)=>String.fromCharCode(s.charCodeAt(0)-0xFEE0)]
-      ].reduce((acc, cur) => acc.replaceAll(cur[0], cur[1]), document.getElementById('stats').value);
+      // 横テーブルスタイル
+      if (setting.value.statusIsInvert) {
+        // status欄のテキストを取得・整形
+        const rows = [
+          [/[　 ]/g, ''],
+          [/[！-｝]/g, (s)=>String.fromCharCode(s.charCodeAt(0)-0xFEE0)]
+        ]
+          .reduce((acc, cur) => acc.replaceAll(cur[0], cur[1]), document.getElementById('stats').value)
+          .split('\n')
+          .filter(Boolean);
 
-      // 能力値
-      ['STR', 'CON', 'POW', 'DEX', 'APP', 'SIZ', 'INT', 'EDU'].forEach(key => {
-        const value = parseInt(text.match(new RegExp(`${key}\\W*(\\d+)`, 'i'))?.[1]) || null;
-        defStats.value.params.get(key).value = value;
-      });
+        const keys   = rows[0]    .split(/^\|.+\|$/.test(rows[0]) ? '|' : '\t');
+        const values = rows.at(-1).split(/^\|.+\|$/.test(rows[0]) ? '|' : '\t');
+        
+        if (rows.length < 2 || rows.length > 3 || keys.length !== values.length) {
+          defStats.value.stats.forEach(dic => dic.value=null);
+          defStats.value.params.forEach(dic => dic.value=null);
+          defStats.value.else.keys().forEach(key => defStats.value.else.set(key, null));
+          return;
+        }
+        
+        const arr = [];
+        keys.forEach((key, index) => {
+          if (!key) return;
+          key = formatKey(key);
+          let value = values[index];
+          if (key==='DB') {
+            if (!/^[+\-]?(?:0|\d*D\d+)$/i.test(value)) value = null; 
+            else {
+              if (value.charAt(0)==='+') value = value.substring(1);
+              if (/(?:^|[^\d])D\d/i.test(key)) value.replaceAll(/(?<=(?:^|[^\d]))(D\d)/ig, '1$1');
+              value = value.toUpperCase();
+            }
+          }
+          arr.push([key, value]);
+          
+          function formatKey (key) {
+            if (/(?:DB|ダメージ・?ボーナス)/i.test(key)) key='DB';
+            else if (/HP|耐久力?/i.test(key)) key='HP';
+            else if (/MP|マジック・?ポイント/i.test(key)) key='MP';
+            else if (/SAN値?|正気度/i.test(key)) key='SAN';
+            else if (/ID[AE]|アイディ?ア/i.test(key)) key='アイデア';
+            else if (/LUCK|幸運/i.test(key)) key='幸運';
+            else if (/KNOW|知識/i.test(key)) key='知識';
+            key = key.trim().toUpperCase();
+            return key;
+          }
+        });
+        const poolMap = new Map(arr);
 
+        // ------------------
+        //     set values
+        // ------------------
+        // 能力値
+        ['STR', 'CON', 'POW', 'DEX', 'APP', 'SIZ', 'INT', 'EDU'].forEach(key => {
+          defStats.value.params.get(key).value = parseInt(poolMap.get(key)) || null;
+        });
+
+        // DB
+        defStats.value.params.get('DB').value = poolMap.get('DB') || null;
+
+        // HP・MP・SAN
+        defStats.value.stats.get('HP').value = parseInt(poolMap.get('HP')) || null;
+        defStats.value.stats.get('MP').value = parseInt(poolMap.get('MP')) || null;
+        defStats.value.stats.get('SAN').value = parseInt(poolMap.get('SAN')) || null;
+
+        // アイデア・幸運・知識
+        defStats.value.else.set('アイデア', parseInt(poolMap.get('アイデア')) || null);
+        defStats.value.else.set('幸運', parseInt(poolMap.get('幸運')) || null);
+        defStats.value.else.set('知識', parseInt(poolMap.get('知識')) || null);
+      }
+      
+      // 通常スタイル
+      else {
+        // status欄のテキストを取得・整形
+        const text = [
+          [/[　 \n]/g, ''],
+          [/[！-｝]/g, (s)=>String.fromCharCode(s.charCodeAt(0)-0xFEE0)]
+        ].reduce((acc, cur) => acc.replaceAll(cur[0], cur[1]), document.getElementById('stats').value);
+        
+        // 能力値
+        ['STR', 'CON', 'POW', 'DEX', 'APP', 'SIZ', 'INT', 'EDU'].forEach(key => {
+          const value = parseInt(text.match(new RegExp(`${key}\\W*(\\d+)`, 'i'))?.[1]) || null;
+          defStats.value.params.get(key).value = value;
+        });
+  
+        // DB
+        const db = text.match(/(?:DB|ダメージ・?ボーナス)\W*([-D\d]+)/i)?.[1].toLowerCase() || null;
+        defStats.value.params.get('DB').value = db;
+  
+        // HP・MP・SAN
+        const hp  = parseInt(text.match(/(?:HP|耐久力?)\W*(\d+)/i)?.[1]) || null;
+        const mp  = parseInt(text.match(/(?:MP|マジック・?ポイント)\W*(\d+)/i)?.[1]) || null;
+        const san = parseInt(text.match(/(?:SAN値?|正気度)\W*(\d+)/i)?.[1]) || null;
+        defStats.value.stats.get('HP').value = hp;
+        defStats.value.stats.get('MP').value = mp;
+        defStats.value.stats.get('SAN').value = san;
+        
+        // アイデア・幸運・知識
+        const idea = parseInt(text.match(/(?:ID[AE]|アイディ?ア)\W*(\d+)/i)?.[1]) || null;
+        const luck = parseInt(text.match(/(?:LUCK|幸運)\W*(\d+)/i)?.[1]) || null;
+        const know = parseInt(text.match(/(?:KNOW|知識)\W*(\d+)/i)?.[1]) || null;
+        defStats.value.else.set('アイデア', idea);
+        defStats.value.else.set('幸運', luck);
+        defStats.value.else.set('知識', know);
+      }
+
+      // ----------------
+      // fall back values
+      // ----------------
       // DB
-      let db = text.match(/(?:DB|ダメージ・?ボーナス)\W*([-D\d]+)/i)?.[1].toLowerCase() || null;
       if (
-        !db &&
+       !defStats.value.params.get('DB').value &&
         defStats.value.params.get('STR').value &&
         defStats.value.params.get('SIZ').value
       ) {
@@ -181,51 +279,55 @@ const rootApp = createApp({
           defStats.value.params.get('STR').value +
           defStats.value.params.get('SIZ').value
         ) / (setting.value.is6th ? 1 : 5);
-
+        let db;
         if (sum <= 16) db = '-1d4';
         else if (sum > 16 && sum <= 24) db = 0;
         else if (sum > 24 && sum <= 32) db = '1d4';
         else if (sum > 32 && sum <= 40) db = '1d6';
         else if (sum > 40 && sum <= 48) db = '2d6';
+        defStats.value.params.get('DB').value = db;
       }
-      defStats.value.params.get('DB').value = db;
 
-
-      // HP・MP・SAN
-      let hp = parseInt(text.match(/(?:HP|耐久力?)\D*(\d+)/i)?.[1]) || null;
+      // HP
       if (
-        !hp &&
+       !defStats.value.stats.get('HP').value &&
         defStats.value.params.get('CON').value &&
         defStats.value.params.get('SIZ').value
       ) {
         const sum = defStats.value.params.get('CON').value + defStats.value.params.get('SIZ').value;
-        hp = setting.value.is6th ? Math.ceil(sum / 2) : Math.floor(sum / 10);
+        const hp = setting.value.is6th ? Math.ceil(sum / 2) : Math.floor(sum / 10);
+        defStats.value.stats.get('HP').value = hp;
       }
-
-      const mp = parseInt(text.match(/(?:MP|マジック・?ポイント)\D*(\d+)/i)?.[1]) ||
-        defStats.value.params.get('POW').value / (setting.value.is6th ? 1 : 5) || null;
-
-      const san = parseInt(text.match(/(?:SAN値?|正気度)\D*(\d+)/i)?.[1]) ||
-        defStats.value.params.get('POW').value * (setting.value.is6th ? 5 : 1) || null;
-
-
+      // MP・SAN
+      if (defStats.value.params.get('POW').value) {
+        if (!defStats.value.stats.get('MP').value) {
+          defStats.value.stats.get('MP').value = defStats.value.params.get('POW').value / (setting.value.is6th ? 1 : 5);
+        }
+        if (!defStats.value.stats.get('SAN').value) {
+          defStats.value.stats.get('SAN').value = defStats.value.params.get('POW').value * (setting.value.is6th ? 5 : 1);
+        }
+      }
+      
       // アイデア・幸運・知識
-      const idea = parseInt(text.match(/(?:ID[AE]|アイディ?ア)\D*(\d+)/i)?.[1]) ||
-        defStats.value.params.get('INT').value * (setting.value.is6th ? 5 : 1) || null;
-
-      const luck = parseInt(text.match(/(?:LUCK|幸運)\D*(\d+)/i)?.[1]) ||
-        (setting.value.is6th ? defStats.value.params.get('POW').value * 5 : null) || null;
-
-      const know = parseInt(text.match(/(?:KNOW|知識)\D*(\d+)/i)?.[1]) ||
-        defStats.value.params.get('EDU').value * (setting.value.is6th ? 5 : 1) || null;
-
-      defStats.value.stats.get('HP').value = hp;
-      defStats.value.stats.get('MP').value = mp;
-      defStats.value.stats.get('SAN').value = san;
-
-      defStats.value.else.set('アイデア', idea);
-      defStats.value.else.set('幸運', luck);
-      defStats.value.else.set('知識', know);
+      if (
+       !defStats.value.else.get('アイデア') &&
+        defStats.value.params.get('INT').value
+      ) {
+        defStats.value.else.set('アイデア', defStats.value.params.get('INT').value * (setting.value.is6th ? 5 : 1));
+      }
+      if (
+       !defStats.value.else.get('幸運') &&
+        defStats.value.params.get('POW').value &&
+        setting.value.is6th
+      ) {
+        defStats.value.else.set('幸運', defStats.value.params.get('POW').value * 5);
+      }
+      if (
+       !defStats.value.else.get('知識') &&
+        defStats.value.params.get('EDU').value
+      ) {
+        defStats.value.else.set('知識', defStats.value.params.get('EDU').value * (setting.value.is6th ? 5 : 1));
+      }
     }
 
     function updateSkillList () {

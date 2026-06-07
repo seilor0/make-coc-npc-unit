@@ -73,7 +73,7 @@
             <textarea id="name"></textarea>
     
             <!-- 能力値 -->
-            <div class="plane-title">
+            <div class="plane-title" style="display: flex;">
               能力値 etc.
               <div class="tips">
                 <google-icon>info</google-icon>
@@ -85,6 +85,11 @@
                   </ul>
                 </div>
               </div>
+              <span style="flex-grow: 1;"></span>
+              <toggle-button :is-checked="setting.statusIsInvert" @checked-toggle="val=>{setting.statusIsInvert=val;updateDefStats();}">
+                <template #checked>    横テーブル</template>
+                <template #not-checked>横テーブル</template>
+              </toggle-button>
             </div>
             <textarea id="stats" @change="updateDefStats"></textarea>
     
