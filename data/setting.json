@@ -40,6 +40,7 @@
     "unitSize": 4,
     "faces": [],
     "delChar": " …「」『』【】〈〉《》≪≫",
+    "separateLine": "===========",
     "importUnitSetting": true
   }
 }

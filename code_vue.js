@@ -34,6 +34,7 @@ const rootApp = createApp({
       "unitSize": 4,
       "faces": [],
       "delChar": " …「」『』【】〈〉《》≪≫",
+      "separateLine": "===========",
       "importUnitSetting": true
     });
 
@@ -94,7 +95,7 @@ const rootApp = createApp({
         setting.value.faces.forEach(face => 
           baseArr.push(new SkillData({ id: id++, type: 'line', value: face }))
         );
-        baseArr.push(new SkillData({ id: id++, type: 'line', value: '===========' }));
+        baseArr.push(new SkillData({ id: id++, type: 'line', value: setting.value.separateLine }));
       }
 
       // 正気度ロール
@@ -126,7 +127,7 @@ const rootApp = createApp({
       // 倍数ロール
       if (chatTargets.value.get('ステ*5')) {
         if (defStats.value.params.entries().find((value, key) => value.value && !value.isExcluded && key!=='DB')) {
-          baseArr.push(new SkillData({ id: id++, type: 'line', value: '===========' }));
+          baseArr.push(new SkillData({ id: id++, type: 'line', value: setting.value.separateLine }));
         }
         
         defStats.value.params.forEach((dic, key) => {
