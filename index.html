@@ -125,8 +125,8 @@
                     <button-css-icon icon-name="icon-minus" class="invert-el shadow" @click="deleteRow('params')"></button-css-icon>
                   </caption>
                   <tbody>
-                    <tr v-for="[key,dic] in defStats.params" :key="dic.id" :class="{'is-disabled': dic.del}" @click="dic.del=!dic.del">
-                      <td><input type="checkbox" v-model="dic.del"></td>
+                    <tr v-for="[key,dic] in defStats.params" :class="{'is-disabled': dic.isExcluded}" @click="dic.isExcluded=!dic.isExcluded">
+                      <td><input type="checkbox" v-model="dic.isExcluded"></td>
                       <th>{{key}}</th>
                       <td>{{dic.value}}</td>
                     </tr>
@@ -154,8 +154,8 @@
                     <button-css-icon icon-name="icon-minus" class="invert-el shadow" @click="deleteRow('stats')"></button-css-icon> 
                   </caption>
                   <tbody>
-                    <tr v-for="[key,dic] in defStats.stats" :key="dic.id" :class="{'is-disabled': dic.del}" @click="dic.del=!dic.del">
-                      <td><input type="checkbox" v-model="dic.del"></td>
+                    <tr v-for="[key,dic] in defStats.stats" :class="{'is-disabled': dic.isExcluded}" @click="dic.isExcluded=!dic.isExcluded">
+                      <td><input type="checkbox" v-model="dic.isExcluded"></td>
                       <th>{{key}}</th>
                       <td>{{dic.value}}</td>
                     </tr>
@@ -163,7 +163,7 @@
                       v-for="(stat,index) in exStats.stats" 
                       :key="stat.id"
                       :draggable="true"
-                      :class="{'is-dragging': index === dragIndex && dragTarget===exStats.stats}"
+                      :class="{'is-dragging': index===dragIndex && dragTarget===exStats.stats}"
                       @dragstart="dragStart(index, exStats.stats)"
                       @dragenter="dragEnter(index, exStats.stats)"
                       @dragover.prevent
@@ -179,7 +179,7 @@
                 <table class="value-table">
                   <caption>他</caption>
                   <tbody>
-                    <tr v-for="[key,dic] in defStats.else" :key="dic.id">
+                    <tr v-for="[key,dic] in defStats.else">
                       <th>{{key}}</th>
                       <td>{{dic.value}}</td>
                     </tr>
@@ -193,13 +193,13 @@
                       v-for="(dic,index) in skillList" 
                       :key="dic.id"
                       :draggable="true"
-                      :class="{'is-dragging': index === dragIndex && dragTarget===skillList}"
+                      :class="{'is-dragging': index===dragIndex && dragTarget===skillList}"
                       @dragstart="dragStart(index, skillList)"
                       @dragenter="dragEnter(index, skillList)"
                       @dragover.prevent
                       @dragend="dragEnd"
                     >
-                      <th :class="{'is-disabled' : dic.noname}" @click="dic.noname = !dic.noname">
+                      <th :class="{'is-disabled' : dic.isNoname}" @click="dic.isNoname = !dic.isNoname">
                         {{dic.times ? `x${dic.times} ` : ''}}{{dic.name}}
                       </th>
                       <td>{{dic.value}}</td>

@@ -29,25 +29,25 @@ const rootApp = createApp({
 
     const defStats = ref({
       params: new Map([
-        ['STR', { id: id++, value: null, del: false }],
-        ['CON', { id: id++, value: null, del: false }],
-        ['POW', { id: id++, value: null, del: false }],
-        ['DEX', { id: id++, value: null, del: false }],
-        ['APP', { id: id++, value: null, del: false }],
-        ['SIZ', { id: id++, value: null, del: false }],
-        ['INT', { id: id++, value: null, del: false }],
-        ['EDU', { id: id++, value: null, del: false }],
-        ['DB',  { id: id++, value: null, del: false }],
+        ['STR', { value: null, isExcluded: false }],
+        ['CON', { value: null, isExcluded: false }],
+        ['POW', { value: null, isExcluded: false }],
+        ['DEX', { value: null, isExcluded: false }],
+        ['APP', { value: null, isExcluded: false }],
+        ['SIZ', { value: null, isExcluded: false }],
+        ['INT', { value: null, isExcluded: false }],
+        ['EDU', { value: null, isExcluded: false }],
+        ['DB',  { value: null, isExcluded: false }],
       ]),
       stats: new Map([
-        ['HP',  { id: id++, value: null, del: false }],
-        ['MP',  { id: id++, value: null, del: false }],
-        ['SAN', { id: id++, value: null, del: false }],
+        ['HP',  { value: null, isExcluded: false }],
+        ['MP',  { value: null, isExcluded: false }],
+        ['SAN', { value: null, isExcluded: false }],
       ]),
       else: new Map([
-        ['アイデア', { id: id++, value: null }],
-        ['幸運', { id: id++, value: null }],
-        ['知識', { id: id++, value: null }],
+        ['アイデア', { value: null }],
+        ['幸運',     { value: null }],
+        ['知識',     { value: null }],
       ]),
     });
     watch(() => setting.value.is6th, updateDefStats);
@@ -136,20 +136,13 @@ const rootApp = createApp({
      * @type {SkillData[]}
     */
     const skillList = ref([]);
-    /**
-     * @type {PaletteData[]}
-     */
+    /** @type {PaletteData[]} */
     const refChatList = ref([]);
     
-    /**
-     * @type {PaletteData[]}
-     */
+    /** @type {PaletteData[]} */
     const chatList = computed(() => {
       // まずはdic形式で情報を集める
-      /**
-       * チャパレ用の情報を格納しておくリスト
-       * @type {SkillData[]}
-       */
+      /** @type {SkillData[]} */
       const rawDicArr = [];
       chatTargets.value
         .forEach((value, chatTarget) => {
@@ -160,13 +153,12 @@ const rootApp = createApp({
             if (!setting.value.faces?.length) return;
             setting.value.faces.forEach(face => rawDicArr.push({ id: id++, type: 'line', value: face }));
             rawDicArr.push(new SkillData({ id: id++, type: 'line', value: '===========' }));
-            // rawDicArr.push({ id: id++, type: 'line', value: '===========' });
           }
 
           // 正気度ロール
           else if (chatTarget == 'SANc') {
             if (!defStats.value.stats.get('SAN').value) return;
-            if ( defStats.value.stats.get('SAN').del) return;
+            if ( defStats.value.stats.get('SAN').isExcluded) return;
             rawDicArr.push(new SkillData({ id: id++, type: 'elseRoll', name: '正気度ロール', value: '1d100<={SAN}' }));
           }
 
@@ -186,12 +178,13 @@ const rootApp = createApp({
 
           // 倍数ロール
           else if (chatTarget == 'ステ*5') {
-            if (defStats.value.params.entries().find(row => row[1].value && !row[1].del && row[0]!='DB'))
+            if (defStats.value.params.entries().find((value, key) => value.value && !value.isExcluded && key!=='DB')) {
               rawDicArr.push(new SkillData({ id: id++, type: 'line', value: '===========' }));
+            }
             
             defStats.value.params.forEach((dic, key) => {
-              if (key=='DB') return;
-              if (!dic.value || dic.del) return;
+              if (key==='DB') return;
+              if (!dic.value || dic.isExcluded) return;
               const end = setting.value.is6th ? '*5' : '';
               const value = setting.value.rollStyle=='@' ? dic.value * (setting.value.is6th?5:1) : `{${key}}${end}`;
               rawDicArr.push(new SkillData({id: id++, type: 'roll', name: `${key}${end}`, value: value}));
@@ -243,8 +236,6 @@ const rootApp = createApp({
       return chatDicArr;
     });
     watch(chatList, () => refChatList.value = chatList.value);
-
-    const fillLength_chat = computed(() => Math.max(17 - chatList.value.length, 0));
 
 
     function updateDefStats () {
@@ -338,7 +329,6 @@ const rootApp = createApp({
 
       baseArr.forEach(base => {
         const dic = new SkillData({id: id++});
-        // const dic = { id: id++, type: null, name: '', value: null, times: null, noname: false };
 
         // 複数回ロール
         if (/^(?:x|rep|repeat)\d+/i.test(base)) {
@@ -535,7 +525,7 @@ const rootApp = createApp({
 
       // params
       defStats.value.params.forEach((dic,key) => {
-        if (!dic.del && dic.value) unit.data.params.push({label:key, value:String(dic.value)});
+        if (!dic.isExcluded && dic.value) unit.data.params.push({label:key, value:String(dic.value)});
       });
       exStats.value.params.forEach(dic => {
         if (dic.value) unit.data.params.push({label:dic.label, value:dic.value});
@@ -543,7 +533,7 @@ const rootApp = createApp({
 
       // stats
       defStats.value.stats.forEach((dic,key) => {
-        if (!dic.del && dic.value) unit.data.status.push({label:key, value:dic.value, max:dic.value});
+        if (!dic.isExcluded && dic.value) unit.data.status.push({label:key, value:dic.value, max:dic.value});
       });
 
       const luck = defStats.value.else.get('幸運').value;
@@ -568,12 +558,8 @@ const rootApp = createApp({
     function getChatpalette () {
       return refChatList.value
         .filter(dic => !dic.isExcluded)
-        .map(dic => `${dic.isSecret?'s':''}${dic.timesText}${dic.text}`)
+        .map(dic => `${dic.timesText}${dic.isSecret?'s':''}${dic.text}`)
         .join('\n');
-      // return refChatList.value
-      //   .filter(dic => !dic.del)
-      //   .map(dic => `${dic.secret?'s':''}${dic.times}${dic.text}`)
-      //   .join('\n');
     }
 
     function copy2clipboard(element, text) {
@@ -630,8 +616,6 @@ const rootApp = createApp({
 
       skillList,
       refChatList,
-
-      fillLength_chat,
 
       addRow,
       deleteRow,
