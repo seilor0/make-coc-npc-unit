@@ -230,10 +230,10 @@
                     @dragover.prevent
                     @dragend="dragEnd"
                   >
-                    <td><input type="checkbox" v-model="dic.del"></td>
-                    <td><input type="checkbox" v-model="dic.secret"></td>
-                    <td :class="{'is-disabled': dic.del}" @click="dic.del=!dic.del">
-                      {{dic.times}}{{dic.secret ? 's' : ''}}{{dic.text}}
+                    <td><input type="checkbox" v-model="dic.isExcluded"></td>
+                    <td><input type="checkbox" v-model="dic.isSecret"></td>
+                    <td :class="{'is-disabled': dic.isExcluded}" @click="dic.isExcluded=!dic.isExcluded">
+                      {{dic.timesText}}{{dic.isSecret ? 's' : ''}}{{dic.text}}
                     </td>
                   </tr>
                   <tr v-for="val in fillLength_chat">
@@ -245,12 +245,12 @@
               </table>
     
               <div class="setting-div" style="font-size: 0.9rem;column-gap: 0.75rem;margin-block: 0.25rem 0;margin-inline-start: -1rem;">
-                <template v-for="data in chatTargets" :key="data.id">
-                  <span>{{data.label}}</span>
-                  <toggle-button :is-checked = "data.value" @checked-toggle = "val=>data.value=val"></toggle-button>
+                <template v-for="[key, value] in chatTargets">
+                  <span>{{key}}</span>
+                  <toggle-button :is-checked="value" @checked-toggle="val=>chatTargets.set(key, val)"></toggle-button>
                 </template>
               </div>
-    
+
             </div>
           </section>
         </div>

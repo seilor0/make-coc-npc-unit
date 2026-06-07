@@ -19,13 +19,13 @@ const rootApp = createApp({
 
     const setting = ref({});
 
-    const chatTargets = ref([
-      { id: id++, label: '差分', value: true },
-      { id: id++, label: 'SANc', value: false },
-      { id: id++, label: '知識etc.', value: true },
-      { id: id++, label: '技能', value: true },
-      { id: id++, label: 'ステ*5', value: true },
-    ]);
+    const chatTargets = ref(new Map([
+      ['差分', true],
+      ['SANc', false],
+      ['知識etc.', true],
+      ['技能', true],
+      ['ステ*5', true],
+    ]));
 
     const defStats = ref({
       params: new Map([
@@ -152,39 +152,40 @@ const rootApp = createApp({
        */
       const rawDicArr = [];
       chatTargets.value
-        .filter(dic => dic.value)
-        .map(dic => dic.label)
-        .forEach(chatTarget => {
+        .forEach((value, chatTarget) => {
+          if (!value) return;
+
           // 差分
           if (chatTarget == '差分') {
             if (!setting.value.faces?.length) return;
             setting.value.faces.forEach(face => rawDicArr.push({ id: id++, type: 'line', value: face }));
             rawDicArr.push(new SkillData({ id: id++, type: 'line', value: '===========' }));
             // rawDicArr.push({ id: id++, type: 'line', value: '===========' });
-
+          }
 
           // 正気度ロール
-          } else if (chatTarget == 'SANc') {
+          else if (chatTarget == 'SANc') {
             if (!defStats.value.stats.get('SAN').value) return;
             if ( defStats.value.stats.get('SAN').del) return;
             rawDicArr.push(new SkillData({ id: id++, type: 'elseRoll', name: '正気度ロール', value: '1d100<={SAN}' }));
-
+          }
 
           // アイデア・幸運・知識
-          } else if (chatTarget == '知識etc.') {
+          else if (chatTarget == '知識etc.') {
             defStats.value.else.forEach((dic, key) => {
               if (!dic.value) return;
               if (key=='幸運' && !setting.value.is6th && setting.value.rollStyle!='@') rawDicArr.push(new SkillData({ type: 'roll', name: '幸運', value: '{幸運}' }));
               else rawDicArr.push(new SkillData({ id: id++, type: 'roll', name: key, value: dic.value }));
             });
+          }
 
           // 技能・判定
-          } else if (chatTarget == '技能') {
+          else if (chatTarget == '技能') {
             rawDicArr.push(...skillList.value);
-
+          }
 
           // 倍数ロール
-          } else if (chatTarget == 'ステ*5') {
+          else if (chatTarget == 'ステ*5') {
             if (defStats.value.params.entries().find(row => row[1].value && !row[1].del && row[0]!='DB'))
               rawDicArr.push(new SkillData({ id: id++, type: 'line', value: '===========' }));
             
