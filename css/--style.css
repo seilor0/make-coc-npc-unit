@@ -494,7 +494,7 @@
     thead :is(th,td):nth-child(2) {border-start-start-radius: 0.25rem;}
   
     :is(th,td):first-child {
-      background-color: transparent;
+      background-color: transparent !important;
       border-style: none;
       padding: 0;
       width: var(--indent);
