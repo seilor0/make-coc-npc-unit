@@ -617,13 +617,13 @@ const rootApp = createApp({
         if (!value) return;
         switch (key) {
           case 'アイデア':
-            if (value===defStats.value.params.get('INT')*(setting.value.is6th?5:1)) return;
+            if (value===defStats.value.params.get('INT').value*(setting.value.is6th?5:1)) return;
             break;
           case '幸運':
-            if (value===defStats.value.params.get('POW')*5 && setting.value.is6th) return;
+            if (value===defStats.value.params.get('POW').value*5 && setting.value.is6th) return;
             break;
           case '知識':
-            if (value===defStats.value.params.get('EDU')*(setting.value.is6th?5:1)) return;
+            if (value===defStats.value.params.get('EDU').value*(setting.value.is6th?5:1)) return;
             break;
         }
         resultArr.push([key, value]);
