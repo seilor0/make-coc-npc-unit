@@ -57,10 +57,10 @@ const rootApp = createApp({
     function deleteRow(key) { exStats.value[key].pop(); }
 
 
+    // ------------------------
+    //          class
+    // ------------------------
     /**
-     * 技能テーブル用の情報を格納しておくリスト
-     * { id, type, name, value, times, noname }
-     * @type {{ id, type, name, value, times, noname }[]}
      * @type 判定の種類\n
      *  - choice : チョイス
      *  - roll : 通常の判定
@@ -69,30 +69,86 @@ const rootApp = createApp({
      *  - line : :HP+1, /scene, \@face など、そのままチャットに送るもの
      * @name 技能名
      * @value 技能値・判定部分のテキスト
-     * @times **繰り返す回数
-     * @noname **技能名をチャパレに表示しない設定
+     * @times 繰り返す回数
+     * @isNoname 技能名をチャパレに表示しない設定
+     */
+    class SkillData {
+      constructor({
+        id = -1,
+        type = '',
+        name = '',
+        value = '',
+        times = null,
+        isNoname = false,
+      }={}) {
+        this.id = id;
+        this.type = type;
+        this.name = name;
+        this.value = value;
+        this.times = times;
+        this.isNoname = isNoname;
+      }
+
+      get timesText () {
+        return this.times ? `x${this.times} ` : '';
+      }
+
+      // method
+      getPaletteText (dice, rollStyle) {
+        const name = this.name && !this.isNoname ? ` 【${this.name}】` : '';
+        switch (this.type) {
+          case 'line':
+            return this.value;
+          case 'dice':
+          case 'choice':
+            return `${this.value}${name}`;
+          case 'elseRoll':
+            let value = this.value;
+            if      (dice=='CC')  value = value.replace(/(CBR|RES)B/i,'$1');
+            else if (dice=='CCB') value = value.replace(/(CBR|RES)([^B])/i,'$1B$2');
+            return `${value}${name}`;
+          case 'roll':
+            if (rollStyle=='@')
+              return `${dice}${name} @${this.value}`;
+            else
+              return `${dice}<=${this.value}${name}`;
+        }
+      }
+    }
+
+    class PaletteData {
+      constructor({
+        timesText = '',
+        text = '',
+        isSecret = false,
+        isExcluded = false,
+      }={}) {
+        this.timesText = this.timesText;
+        this.text = text;
+        this.isSecret = isSecret;
+        this.isExcluded = isExcluded;
+      }
+    }
+
+
+    /**
+     * 技能テーブル用の情報を格納しておくリスト
+     * @type {SkillData[]}
     */
     const skillList = ref([]);
     /**
-     * {secret, del, text, times}
+     * @type {PaletteData[]}
      */
     const refChatList = ref([]);
     
+    /**
+     * @type {PaletteData[]}
+     */
     const chatList = computed(() => {
       // まずはdic形式で情報を集める
       /**
        * チャパレ用の情報を格納しておくリスト
-       * @type {{ id: number, type: string, name?: string, value: string, times?: number | null, noname?: Boolean }[]}
-       * @type 判定の種類\n
-       *  - choice : チョイス
-       *  - roll : 通常の判定
-       *  - dice : 1d3など、振るダイスが直接記述されているもの
-       *  - elseRoll : 対抗ロール・正気度ロールなど、判定だが振るダイスが直接記述されているもの
-       *  - line : セパレータ, :HP+1, /scene, \@face など、そのままチャットに送るもの
-       * @name 技能名
-       * @value 技能値・判定部分のテキスト
-       * @times **繰り返す回数
-       * @noname **技能名をチャパレに表示しない設定
+       * @type {SkillData[]}
        */
       const rawDicArr = [];
       chatTargets.value
@@ -103,22 +159,23 @@ const rootApp = createApp({
           if (chatTarget == '差分') {
             if (!setting.value.faces?.length) return;
             setting.value.faces.forEach(face => rawDicArr.push({ id: id++, type: 'line', value: face }));
-            rawDicArr.push({ id: id++, type: 'line', value: '===========' });
+            rawDicArr.push(new SkillData({ id: id++, type: 'line', value: '===========' }));
+            // rawDicArr.push({ id: id++, type: 'line', value: '===========' });
 
 
           // 正気度ロール
           } else if (chatTarget == 'SANc') {
             if (!defStats.value.stats.get('SAN').value) return;
             if ( defStats.value.stats.get('SAN').del) return;
-            rawDicArr.push({ id: id++, type: 'elseRoll', name: '正気度ロール', value: '1d100<={SAN}' });
+            rawDicArr.push(new SkillData({ id: id++, type: 'elseRoll', name: '正気度ロール', value: '1d100<={SAN}' }));
 
 
           // アイデア・幸運・知識
           } else if (chatTarget == '知識etc.') {
             defStats.value.else.forEach((dic, key) => {
               if (!dic.value) return;
-              if (key=='幸運' && !setting.value.is6th && setting.value.rollStyle!='@') rawDicArr.push({ type: 'roll', name: '幸運', value: '{幸運}' });
-              else rawDicArr.push({ id: id++, type: 'roll', name: key, value: dic.value });
+              if (key=='幸運' && !setting.value.is6th && setting.value.rollStyle!='@') rawDicArr.push(new SkillData({ type: 'roll', name: '幸運', value: '{幸運}' }));
+              else rawDicArr.push(new SkillData({ id: id++, type: 'roll', name: key, value: dic.value }));
             });
 
           // 技能・判定
@@ -129,52 +186,55 @@ const rootApp = createApp({
           // 倍数ロール
           } else if (chatTarget == 'ステ*5') {
             if (defStats.value.params.entries().find(row => row[1].value && !row[1].del && row[0]!='DB'))
-              rawDicArr.push({ id: id++, type: 'line', value: '===========' });
+              rawDicArr.push(new SkillData({ id: id++, type: 'line', value: '===========' }));
             
             defStats.value.params.forEach((dic, key) => {
               if (key=='DB') return;
               if (!dic.value || dic.del) return;
               const end = setting.value.is6th ? '*5' : '';
               const value = setting.value.rollStyle=='@' ? dic.value * (setting.value.is6th?5:1) : `{${key}}${end}`;
-              rawDicArr.push({id: id++, type: 'roll', name: `${key}${end}`, value: value});
+              rawDicArr.push(new SkillData({id: id++, type: 'roll', name: `${key}${end}`, value: value}));
             });
           }
         });
 
       // 集めた情報をチャパレ形式に変換
-      /**
-       * {secret, del, text, times}
-       */
       const chatDicArr = rawDicArr.map(dic => {
-        const result = {del:false, secret:false, text:'', times:''};
+        const result = new PaletteData();
+        // const result = {del:false, secret:false, text:'', times:''};
         
         if (
           dic.type==='dice'     && setting.value.secretSingleDice     ||
           dic.type==='choice'   && setting.value.secretChoice         ||
           dic.type==='roll'     && setting.value.rollStyle==='secret' ||
           dic.type==='elseRoll' && setting.value.rollStyle==='secret'
-        ) result.secret = true;
+        ) {
+          result.isSecret = true;
+          // result.secret = true;
+        }
 
-        const dic2text = (dic) => {
-          const name = dic.name && !dic.noname ? ` 【${dic.name}】` : '';
-          switch (dic.type) {
-            case 'line':
-              return dic.value;
-            case 'dice':
-            case 'choice':
-              return `${dic.value}${name}`;
-            case 'elseRoll':
-              let value = dic.value;
-              if      (setting.value.dice=='CC')  value = value.replace(/(CBR|RES)B/i,'$1');
-              else if (setting.value.dice=='CCB') value = value.replace(/(CBR|RES)([^B])/i,'$1B$2');
-              return `${value}${name}`;
-            case 'roll':
-              if (setting.value.rollStyle=='@') return `${setting.value.dice}${name} @${dic.value}`;
-              else return `${setting.value.dice}<=${dic.value}${name}`;
-          }
-        };
-        result.text = dic2text(dic);
-        result.times = dic.times ? `x${dic.times} ` : '';
+        result.text = dic.getPaletteText(setting.value.dice, setting.value.rollStyle);
+        // const dic2text = (dic) => {
+        //   const name = dic.name && !dic.noname ? ` 【${dic.name}】` : '';
+        //   switch (dic.type) {
+        //     case 'line':
+        //       return dic.value;
+        //     case 'dice':
+        //     case 'choice':
+        //       return `${dic.value}${name}`;
+        //     case 'elseRoll':
+        //       let value = dic.value;
+        //       if      (setting.value.dice=='CC')  value = value.replace(/(CBR|RES)B/i,'$1');
+        //       else if (setting.value.dice=='CCB') value = value.replace(/(CBR|RES)([^B])/i,'$1B$2');
+        //       return `${value}${name}`;
+        //     case 'roll':
+        //       if (setting.value.rollStyle=='@') return `${setting.value.dice}${name} @${dic.value}`;
+        //       else return `${setting.value.dice}<=${dic.value}${name}`;
+        //   }
+        // };
+        // result.text = dic2text(dic);
+        result.timesText = dic.timesText;
+        // result.timesText = dic.times ? `x${dic.times} ` : '';
 
         return result;
       });
@@ -276,7 +336,8 @@ const rootApp = createApp({
       const dicePattern = `${b}(?:[-+*/]${b})*`;
 
       baseArr.forEach(base => {
-        const dic = { id: id++, type: null, name: '', value: null, times: null, noname: false };
+        const dic = new SkillData({id: id++});
+        // const dic = { id: id++, type: null, name: '', value: null, times: null, noname: false };
 
         // 複数回ロール
         if (/^(?:x|rep|repeat)\d+/i.test(base)) {
@@ -505,9 +566,13 @@ const rootApp = createApp({
 
     function getChatpalette () {
       return refChatList.value
-        .filter(dic => !dic.del)
-        .map(dic => `${dic.secret?'s':''}${dic.times}${dic.text}`)
+        .filter(dic => !dic.isExcluded)
+        .map(dic => `${dic.isSecret?'s':''}${dic.timesText}${dic.text}`)
         .join('\n');
+      // return refChatList.value
+      //   .filter(dic => !dic.del)
+      //   .map(dic => `${dic.secret?'s':''}${dic.times}${dic.text}`)
+      //   .join('\n');
     }
 
     function copy2clipboard(element, text) {
