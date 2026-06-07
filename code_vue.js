@@ -17,24 +17,6 @@ const rootApp = createApp({
   },
   setup() {
     let id = 0;
-    let initSetting = {
-      "is6th": true,
-      
-      "dice": "CCB",
-      "rollStyle": "@",
-      "secretSingleDice": false,
-      "secretChoice": false,
-    
-      "secretUnit": false,
-      "invisibleUnit": false,
-      "hideUnit": false,
-    
-      "color": "#888888",
-      "unitSize": 4,
-      "faces": [],
-      "delChar": " …「」『』【】〈〉《》≪≫",
-      "importUnitSetting": true
-    };
 
     const setting = ref({
       "is6th": true,
@@ -365,17 +347,17 @@ const rootApp = createApp({
 
       // unit setting
       if (setting.value.importUnitSetting) {
-        setting.value.color = unit.data.color?.toLowerCase() ?? initSetting.color;
-        if (unit.data.unitSize) setting.value.unitSize = unit.data.unitSize;
-        setting.faces = unit.data.faces?.map(e => e.label).filter(Boolean) || initSetting.faces;
-  
+        if ('color' in unit.data) setting.value.color = unit.data.color.toLowerCase();
+        if ('unitSize' in unit.data) setting.value.unitSize = unit.data.unitSize;
+        if ('faces' in unit.data) setting.faces = unit.data.faces?.map(e => e.label).filter(Boolean);
+
         if ('secret' in unit.data) setting.value.secretUnit = unit.data.secret;
         if ('invisible' in unit.data) setting.value.invisibleUnit = unit.data.invisible;
         if ('hideStatus' in unit.data) setting.value.hideUnit = unit.data.hideStatus;
       }
 
       // name & memo
-      document.getElementById('name').value = `${unit.data.name}\n${unit.data.memo}`.trim();
+      document.getElementById('name').value = `${unit.data.name}\n${unit.data.memo ?? ''}`.trim();
 
       // params & stats
       const statsEl = document.getElementById('stats');
@@ -406,13 +388,13 @@ const rootApp = createApp({
       );
 
       // commands & idea/luck/know
-      const {idea} = unit.data.commands.match(/(?<idea>\d+).*アイディ?ア|アイディ?ア.*@(?<idea>\d+)/)?.groups ?? {idea:null};
-      const {luck} = unit.data.commands.match(/(?<luck>\d+).*幸運|幸運.*@(?<luck>\d+)/)?.groups ?? {luck:null};
-      const {know} = unit.data.commands.match(/(?<know>\d+).*知識|知識.*@(?<know>\d+)/)?.groups ?? {know:null};
+      const {idea} = unit.data.commands.match(/(?<idea>\d+).*アイディ?ア|アイディ?ア.*@(?<idea>\d+)/)?.groups ?? {};
+      const {luck} = unit.data.commands.match(/(?<luck>\d+).*幸運|幸運.*@(?<luck>\d+)/)?.groups ?? {};
+      const {know} = unit.data.commands.match(/(?<know>\d+).*知識|知識.*@(?<know>\d+)/)?.groups ?? {};
 
-      defStats.value.else.set('アイデア', idea);
-      defStats.value.else.set('幸運', luck);
-      defStats.value.else.set('知識', know);
+      defStats.value.else.set('アイデア', idea ?? null);
+      defStats.value.else.set('幸運', luck ?? null);
+      defStats.value.else.set('知識', know ?? null);
 
       statsEl.value += '\n' + [
         idea ? `アイデア  ${idea}` : '',
@@ -440,9 +422,9 @@ const rootApp = createApp({
         kind: 'character',
         data: {
           name: nameEl.value.trim().split('\n')[0].trim(),
-          initiative: defStats.value.params.get('DEX').value || 0,
+          initiative: defStats.value.params.get('DEX').value ?? 0,
           width: setting.value.unitSize,
-          color: setting.value.color ?? initSetting.color,
+          color: setting.value.color ?? '#888888',
           memo:  nameEl.value.replace(/.+\n/,'').trim(),
           commands: getChatpalette(),
           params: [],
@@ -528,7 +510,6 @@ const rootApp = createApp({
       const changeLogJson = await fetch('./data/change-log.json').then(res=>res.json());
 
       setting.value = structuredClone(json.setting);
-      initSetting = structuredClone(json.setting);
 
       document.getElementById('name').placeholder = json.placeholder.name.join('\n');
       document.getElementById('stats').placeholder = json.placeholder.stats.join('\n');
