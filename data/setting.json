@@ -39,7 +39,7 @@
     "color": "#888888",
     "unitSize": 4,
     "faces": [],
-    "delChar": " …「」『』【】〈〉《》≪≫",
+    "delChar": "：…「」『』【】\\[\\]〈〉《》≪≫",
     "separator": "===========",
     "importUnitSetting": true
   }

@@ -223,112 +223,128 @@ const rootApp = createApp({
       skillList.value.splice(0);
 
       const baseArr = [
-        [/　/g, ' '],
+        [/[　 ]/g, ''],
         [/[！-｝]/g, (s)=>String.fromCharCode(s.charCodeAt(0)-0xFEE0)],
-        [new RegExp(`[${setting.value.delChar}]`, 'g'), ''],
-        [/_/g, ' '],
+        // [new RegExp(`[${setting.value.delChar}]`, 'g'), ''],
+        ['_', ' '],
       ]
         .reduce((acc, cur) => acc.replaceAll(cur[0], cur[1]), document.getElementById('skills').value)
         .split(/\n|%/)
         .filter(Boolean);
+
+      const deleteChar =  [
+        [/[　 ]/g, ''],
+        [/[！-｝]/g, (s)=>String.fromCharCode(s.charCodeAt(0)-0xFEE0)],
+      ].reduce((acc, cur) => acc.replaceAll(cur[0], cur[1]), setting.value.delChar);
+      const replaceReg = new RegExp(`[${deleteChar}]`, 'g');
 
       // (?{?DB}?|\d+D\d+|\d+|{.+?})?
       const b = '\\(?(?:\\{?DB\\}?|\\d+D\\d+|\\d+|\\{.+?\\})\\)?';  // db,1d3,2,{...}
       const dicePattern = `${b}(?:[-+*/]${b})*`;
 
       baseArr.forEach(base => {
-        const dic = new SkillData({id: id++});
+        const skillData = new SkillData({id: id++});
 
         // 複数回ロール
         if (/^(?:x|rep|repeat)\d+/i.test(base)) {
-          dic.times = parseInt(base.match(/^(?:x|rep|repeat)(\d+)/i)[1]);
+          skillData.times = parseInt(base.match(/^(?:x|rep|repeat)(\d+)/i)[1]);
           base = base.replace(/(?:x|rep|repeat)\d+ */i, '');
         }
 
         // ---------------------
 
+        // NOT roll
         // command
         if (/^@|^:|^\/(?:scene|save|load|pdf|var|play|roll-table|omikuji)/i.test(base)) {
-          dic.type = 'line';
-          dic.value = base;
+          skillData.type = 'line';
+          skillData.value = base;
         }
         
         // choice
         else if (base.indexOf('choice') > -1) {
           const choice = base.match(/choice\d*(?:\[.+\]|\(.+\)| .+)/i)?.[0];
           if (!choice) return;
-          dic.type = 'choice';
-          dic.name = base.replace(choice, '').trim();
-          dic.value = choice;
+          skillData.type = 'choice';
+          skillData.name = base.replace(choice, '').trim();
+          skillData.value = choice;
         }
         else if (base.indexOf('チョイス') > -1) {
           const {choice, cTimes, option} = base.match(/(?<choice>チョイス(?<cTimes>\d*) *(?<option>.+))/i)?.groups || {choice:'', cTimes:null, option:null};
           if (!choice) return;
           const value = `choice${cTimes}[${option.split(/[,、， ]/).filter(Boolean).join(',')}]`;
-          dic.type = 'choice';
-          dic.name = base.replace(choice, '').trim();
-          dic.value = value;
+          skillData.type = 'choice';
+          skillData.name = base.replace(choice, '').trim();
+          skillData.value = value;
         }
 
-        // 組み合わせロール
-        else if (/CBR/i.test(base)) {
-          const {val, val1, val2} = base.match(/(?<val>CBRB?\D*(?<val1>\d+)\D+(?<val2>\d+)\)?)/i)?.groups || {val:'', val1:null, val2:null};
-          if (!val1 || !val2) return;
-          dic.type = 'elseRoll';
-          dic.name = base.replace(val, '');
-          dic.value = `CBR(${val1},${val2})`;
-        }
-
-        // 対抗ロール
-        else if (/RES/i.test(base)) {
-          const {val, val1, val2} = base.match(/(?<val>RESB?\D*(?<val1>\d+)\D+(?<val2>\d+)\)?)/i)?.groups || {val:'', val1:null, val2:null};
-          if (!val1 || !val2) return;
-          dic.type = 'elseRoll';
-          dic.name = base.replace(val, '');
-          dic.value = `RES(${val1}-${val2})`;
-        }
-        
-        // CCB<=70 skill
-        else if (/(?:1d100|CCB?)<=/i.test(base)) {
-          const {value, name} = base.match(new RegExp(`<=(?<value>${dicePattern}) *(?<name>.*)`, 'i'))?.groups || {};
-          if(!value) return;
-          dic.type = 'roll';
-          dic.name = name ?? '';
-          dic.value = value ?? null;
-        }
-        
-        // CCB skill @70
-        else if (/(?:1d100|CCB?).*@\d+$/i.test(base)) {
-          const {name, value} = base.match(/(?:1d100|CCB?) *(?<name>.*?) *@(?<value>\d+)$/i)?.groups || {};
-          dic.type = 'roll';
-          dic.name = name ?? '';
-          dic.value = value ?? null;
-        }
-
-        // 1d3
-        else if (/\dD\d/i.test(base)) {
-          let value = base.match(new RegExp(dicePattern, 'i'))[0];
-          const name = base.replace(value, '').trim();
-          value = value.replace(/\/1$/i, '').replace(/\{?db\}?/gi, '{DB}');
-          dic.type = 'dice';
-          dic.name = name;
-          dic.value = value;
-        }
-
-        // skill 70
+        // IS roll
         else {
-          const {name, value} = base.match(new RegExp(`(?<name>.*?)(?<value>${dicePattern})\\D*$`, 'i'))?.groups || {};
-          if (!value) {
-            console.log(`Not add to chat-palette : ${base}`);
-            return;
+          base = base.replaceAll(replaceReg, '');
+
+          // 組み合わせロール
+          if (/CBR/i.test(base)) {
+            const {val, val1, val2} = base.match(/(?<val>CBRB?\D*(?<val1>\d+)\D+(?<val2>\d+)\)?)/i)?.groups || {val:'', val1:null, val2:null};
+            if (!val1 || !val2) return;
+            skillData.type = 'elseRoll';
+            skillData.name = base.replace(val, '');
+            skillData.value = `CBR(${val1},${val2})`;
           }
-          dic.type = 'roll';
-          dic.name = name ?? '';
-          dic.value = value ?? null;
+
+          // 対抗ロール
+          else if (/RES/i.test(base)) {
+            const {val, val1, val2} = base.match(/(?<val>RESB?\D*(?<val1>\d+)\D+(?<val2>\d+)\)?)/i)?.groups || {val:'', val1:null, val2:null};
+            if (!val1 || !val2) return;
+            skillData.type = 'elseRoll';
+            skillData.name = base.replace(val, '');
+            skillData.value = `RES(${val1}-${val2})`;
+          }
+
+          // CCB<=70 skill
+          else if (/(?:1d100|CCB?)<=/i.test(base)) {
+            const {value, name} = base.match(new RegExp(`<=(?<value>${dicePattern}) *(?<name>.*)`, 'i'))?.groups || {};
+            if(!value) return;
+            skillData.type = 'roll';
+            skillData.name = name ?? '';
+            skillData.value = value ?? null;
+          }
+
+          // CCB skill @70
+          else if (/(?:1d100|CCB?).*@\d+$/i.test(base)) {
+            const {name, value} = base.match(/(?:1d100|CCB?) *(?<name>.*?) *@(?<value>\d+)$/i)?.groups || {};
+            skillData.type = 'roll';
+            skillData.name = name ?? '';
+            skillData.value = value ?? null;
+          }
+  
+          // 1d3
+          else if (/\dD\d/i.test(base)) {
+            let value = base.match(new RegExp(dicePattern, 'i'))[0];
+            const name = base.replace(value, '').trim();
+            value = value.replace(/\/1$/i, '').replace(/\{?db\}?/gi, '{DB}');
+            skillData.type = 'dice';
+            skillData.name = name;
+            skillData.value = value;
+          }
+  
+          // skill 70
+          else {
+            const {name, value} = base.match(new RegExp(`(?<name>.*?)(?<value>${dicePattern})\\D*$`, 'i'))?.groups || {};
+            if (!value) {
+              console.log(`Not add to chat-palette : ${base}`);
+              return;
+            }
+            skillData.type = 'roll';
+            skillData.name = name ?? '';
+            skillData.value = value ?? null;
+          }
         }
 
-        dic.name = [['(', '（'], [')', '）'], [':','：']].reduce((acc, cur) => acc.replaceAll(cur[0], cur[1]), dic.name);
-        skillList.value.push(dic);
+        skillData.name = [
+          ['(', '（'], 
+          [')', '）'], 
+          [':','：']
+        ].reduce((acc, cur) => acc.replaceAll(cur[0], cur[1]), skillData.name);
+        skillList.value.push(skillData);
       });
     }
 
