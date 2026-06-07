@@ -79,9 +79,9 @@ const rootApp = createApp({
         ['SAN', { value: null, isExcluded: false }],
       ]),
       else: new Map([
-        ['アイデア', { value: null }],
-        ['幸運',     { value: null }],
-        ['知識',     { value: null }],
+        ['アイデア', null],
+        ['幸運',     null],
+        ['知識',     null],
       ]),
     });
     watch(() => setting.value.is6th, updateDefStats);
@@ -217,12 +217,12 @@ const rootApp = createApp({
 
           // アイデア・幸運・知識
           else if (chatTarget == '知識etc.') {
-            defStats.value.else.forEach((dic, key) => {
-              if (!dic.value) return;
+            defStats.value.else.forEach((value, key) => {
+              if (!value) return;
               if (key=='幸運' && !setting.value.is6th && setting.value.rollStyle!='@') {
                 baseArr.push(new SkillData({ type: 'roll', name: '幸運', value: '{幸運}' }));
               } else {
-                baseArr.push(new SkillData({ id: id++, type: 'roll', name: key, value: dic.value }));
+                baseArr.push(new SkillData({ id: id++, type: 'roll', name: key, value: value }));
               }
             });
           }
@@ -322,9 +322,9 @@ const rootApp = createApp({
       defStats.value.stats.get('MP').value = mp;
       defStats.value.stats.get('SAN').value = san;
 
-      defStats.value.else.get('アイデア').value = idea;
-      defStats.value.else.get('幸運').value = luck;
-      defStats.value.else.get('知識').value = know;
+      defStats.value.else.set('アイデア', idea);
+      defStats.value.else.set('幸運', luck);
+      defStats.value.else.set('知識', know);
     }
 
     function updateSkillList () {
@@ -447,7 +447,7 @@ const rootApp = createApp({
 
       defStats.value.stats.forEach(dic => dic.value=null);
       defStats.value.params.forEach(dic => dic.value=null);
-      defStats.value.else.forEach(dic => dic.value=null);
+      defStats.value.else.keys().forEach(key => defStats.value.else.set(key, null));
       skillList.value.splice(0);
     }
 
@@ -488,10 +488,10 @@ const rootApp = createApp({
         if (i===-1) dic.value = null;
         else dic.value = Number.parseInt(unit.data.status.splice(i,1)[0].value);
       });
-      defStats.value.else.forEach((dic,key) => {
+      defStats.value.else.keys().forEach(key => {
         const i = unit.data.status.findIndex(status=>status.label===key);
-        if (i===-1) dic.value = null;
-        else dic.value = Number.parseInt(unit.data.status.splice(i,1)[0].value);
+        const value = i===-1 ? null : Number.parseInt(unit.data.status.splice(i,1)[0].value);
+        defStats.value.else.set(key, value);
       });
       unit.data.params.forEach(param => exStats.value.params.push({id:id++, ...param}));
       unit.data.status.forEach(status => 
@@ -503,9 +503,9 @@ const rootApp = createApp({
       const {luck} = unit.data.commands.match(/(?<luck>\d+).*幸運|幸運.*@(?<luck>\d+)/)?.groups ?? {luck:null};
       const {know} = unit.data.commands.match(/(?<know>\d+).*知識|知識.*@(?<know>\d+)/)?.groups ?? {know:null};
 
-      defStats.value.else.get('アイデア').value = idea;
-      defStats.value.else.get('幸運').value = luck;
-      defStats.value.else.get('知識').value = know;
+      defStats.value.else.set('アイデア', idea);
+      defStats.value.else.set('幸運', luck);
+      defStats.value.else.set('知識', know);
 
       statsEl.value += '\n' + [
         idea ? `アイデア  ${idea}` : '',
@@ -560,7 +560,7 @@ const rootApp = createApp({
         if (!dic.isExcluded && dic.value) unit.data.status.push({label:key, value:dic.value, max:dic.value});
       });
 
-      const luck = defStats.value.else.get('幸運').value;
+      const luck = defStats.value.else.get('幸運');
       if (!setting.value.is6th && luck) unit.data.status.push({label:'幸運', value:luck, max:luck});
 
       exStats.value.stats.forEach(dic => {
