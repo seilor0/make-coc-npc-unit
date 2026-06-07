@@ -32,6 +32,8 @@ const rootApp = createApp({
       "unitSize": 4,
       "faces": [],
       "delChar": " …「」『』【】〈〉《》≪≫",
+      "befBracket": "【",
+      "afBracket": "】",
       "separator": "===========",
       "importUnitSetting": true
     });
@@ -141,6 +143,15 @@ const rootApp = createApp({
       return baseArr.map(skillData => skillData.createPaletteData(setting.value));
     });
     watch(chatList, () => refChatList.value = chatList.value);
+
+    function setBracket (e) {
+      const text = e.currentTarget.value;
+      if (text.length>2) {
+        e.currentTarget.value = text.substring(0, 2);
+      }
+      setting.value.befBracket = text.charAt(0);
+      setting.value.afBracket = text.charAt(1);
+    }
 
     function addSeparator () {
       refChatList.value.push(new PaletteData({text: setting.value.separator}))
@@ -532,6 +543,8 @@ const rootApp = createApp({
       document.getElementById('stats').placeholder = json.placeholder.stats.join('\n');
       document.getElementById('skills').placeholder = json.placeholder.skills.join('\n');
 
+      document.getElementById('skill-bracket').value = json.setting.befBracket + json.setting.afBracket;
+
       document.querySelector('footer table tbody').innerHTML = changeLogJson.reduce((acc, cur) => acc += `<tr><td>${cur.date}</td><td>${cur.version}</td><td>${cur.detail}</td></tr>`, '');
     });
 
@@ -549,6 +562,7 @@ const rootApp = createApp({
       addRow,
       deleteRow,
 
+      setBracket,
       addSeparator,
       updateDefStats,
       updateSkillList,

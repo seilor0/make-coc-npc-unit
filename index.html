@@ -380,9 +380,15 @@
               <template #not-checked>オープン</template>              
             </toggle-button>
           </div>
+        </div>
+          
+        <hr>
 
+        <div class="setting-div">
           <span>区切り線</span>
           <input type="text" v-model="setting.separator">
+          <span>【技能名】</span>
+          <input id="skill-bracket" type="text" maxlength="2" @change="setBracket">
         </div>
       </template>
     </basic-dialog>

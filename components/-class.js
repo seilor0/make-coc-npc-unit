@@ -30,8 +30,8 @@ export class SkillData {
   }
 
   // method
-  getPaletteText (dice, rollStyle) {
-    const name = this.name && !this.isNoname ? ` 【${this.name}】` : '';
+  getPaletteText (dice, rollStyle, befBracket, afBracket) {
+    const name = this.name && !this.isNoname ? ` ${befBracket}${this.name}${afBracket}` : '';
     switch (this.type) {
       case 'line':
         return this.value;
@@ -63,7 +63,7 @@ export class SkillData {
       result.isSecret = true;
     }
     result.timesText = this.timesText;
-    result.text = this.getPaletteText(setting.dice, setting.rollStyle);
+    result.text = this.getPaletteText(setting.dice, setting.rollStyle, setting.befBracket, setting.afBracket);
 
     return result;
   }

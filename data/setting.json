@@ -40,6 +40,8 @@
     "unitSize": 4,
     "faces": [],
     "delChar": "：…「」『』【】\\[\\]〈〉《》≪≫",
+    "befBracket": "【",
+    "afBracket": "】",
     "separator": "===========",
     "importUnitSetting": true
   }
