@@ -233,7 +233,7 @@
                     <td><input type="checkbox" v-model="dic.isExcluded"></td>
                     <td><input type="checkbox" v-model="dic.isSecret"></td>
                     <td :class="{'is-disabled': dic.isExcluded}" @click="dic.isExcluded=!dic.isExcluded">
-                      {{dic.timesText}}{{dic.isSecret ? 's' : ''}}{{dic.text}}
+                      {{dic.fullText}}
                     </td>
                   </tr>
                   <tr v-for="val in Math.max(17 - refChatList.length, 0)">

@@ -27,10 +27,6 @@ export class SkillData {
     this.isNoname = isNoname;
   }
 
-  get timesText () {
-    return this.times ? `x${this.times} ` : '';
-  }
-
   // method
   getPaletteText (dice, rollStyle) {
     const name = this.name && !this.isNoname ? ` 【${this.name}】` : '';
@@ -54,7 +50,7 @@ export class SkillData {
   }
 
   createPaletteData (setting) {
-    const result = new PaletteData();
+    const result = new PaletteData({times:this.times});
     
     if (
       this.type==='dice'     && setting.secretSingleDice     ||
@@ -65,7 +61,6 @@ export class SkillData {
       result.isSecret = true;
     }
     result.text = this.getPaletteText(setting.dice, setting.rollStyle);
-    result.timesText = this.timesText;
 
     return result;
   }
@@ -74,14 +69,19 @@ export class SkillData {
 
 export class PaletteData {
   constructor({
-    timesText = '',
+    times = null,
     text = '',
     isSecret = false,
     isExcluded = false,
   }={}) {
-    this.timesText = this.timesText;
+    this.times = times;
     this.text = text;
     this.isSecret = isSecret;
     this.isExcluded = isExcluded;
+  }
+
+  get fullText () {
+    const timesText = this.times ? `x${this.times} ` : '';
+    return `${timesText}${this.isSecret?'s':''}${this.text}`;
   }
 }

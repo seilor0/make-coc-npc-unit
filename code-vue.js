@@ -490,7 +490,7 @@ const rootApp = createApp({
     function getChatpalette () {
       return refChatList.value
         .filter(dic => !dic.isExcluded)
-        .map(dic => `${dic.timesText}${dic.isSecret?'s':''}${dic.text}`)
+        .map(dic => dic.fullText)
         .join('\n');
     }
 
