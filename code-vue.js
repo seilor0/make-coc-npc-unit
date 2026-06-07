@@ -163,17 +163,24 @@ const rootApp = createApp({
       if (setting.value.statusIsInvert) {
         // status欄のテキストを取得・整形
         const rows = [
-          [/[　 ]/g, ''],
+          ['　', ' '],
           [/[！-｝]/g, (s)=>String.fromCharCode(s.charCodeAt(0)-0xFEE0)]
         ]
           .reduce((acc, cur) => acc.replaceAll(cur[0], cur[1]), document.getElementById('stats').value)
           .split('\n')
           .filter(Boolean);
 
-        const keys   = rows[0]    .split(/^\|.+\|$/.test(rows[0]) ? '|' : '\t');
-        const values = rows.at(-1).split(/^\|.+\|$/.test(rows[0]) ? '|' : '\t');
+        if (rows.length < 2 || rows.length > 3) {
+          defStats.value.stats.forEach(dic => dic.value=null);
+          defStats.value.params.forEach(dic => dic.value=null);
+          defStats.value.else.keys().forEach(key => defStats.value.else.set(key, null));
+          return;
+        }
+
+        const keys   = rows[0]    .split(/^\|.+\|$/.test(rows[0]) ? '|' : /[\t ]+/);
+        const values = rows.at(-1).split(/^\|.+\|$/.test(rows[0]) ? '|' : /[\t ]+/);
         
-        if (rows.length < 2 || rows.length > 3 || keys.length !== values.length) {
+        if (keys.length !== values.length) {
           defStats.value.stats.forEach(dic => dic.value=null);
           defStats.value.params.forEach(dic => dic.value=null);
           defStats.value.else.keys().forEach(key => defStats.value.else.set(key, null));
@@ -184,13 +191,12 @@ const rootApp = createApp({
         keys.forEach((key, index) => {
           if (!key) return;
           key = formatKey(key);
-          let value = values[index];
+          let value = values[index].trim().toUpperCase();
           if (key==='DB') {
             if (!/^[+\-]?(?:0|\d*D\d+)$/i.test(value)) value = null; 
             else {
               if (value.charAt(0)==='+') value = value.substring(1);
               if (/(?:^|[^\d])D\d/i.test(key)) value.replaceAll(/(?<=(?:^|[^\d]))(D\d)/ig, '1$1');
-              value = value.toUpperCase();
             }
           }
           arr.push([key, value]);
