@@ -16,8 +16,6 @@ const rootApp = createApp({
     GoogleIcon,
   },
   setup() {
-    let id = 0;
-
     const setting = ref({
       "is6th": true,
       
@@ -72,7 +70,7 @@ const rootApp = createApp({
     watch(() => setting.value.is6th, updateDefStats);
 
     const exStats = ref({ params: [], stats: [] });
-    function addRow(key)    { exStats.value[key].push({ id: id++, label: '', value: '' }); }
+    function addRow(key)    { exStats.value[key].push({ label: '', value: '' }); }
     function deleteRow(key) { exStats.value[key].pop(); }
 
     /** @type {SkillData[]} */
@@ -93,9 +91,9 @@ const rootApp = createApp({
         setting.value.faces?.length
       ) {
         setting.value.faces.forEach(face => 
-          baseArr.push(new SkillData({ id: id++, type: 'line', value: face }))
+          baseArr.push(new SkillData({ type: 'line', value: face }))
         );
-        baseArr.push(new SkillData({ id: id++, type: 'line', value: setting.value.separator }));
+        baseArr.push(new SkillData({ type: 'line', value: setting.value.separator }));
       }
 
       // 正気度ロール
@@ -104,7 +102,7 @@ const rootApp = createApp({
         defStats.value.stats.get('SAN').value &&
        !defStats.value.stats.get('SAN').isExcluded
       ) {
-        baseArr.push(new SkillData({ id: id++, type: 'elseRoll', name: '正気度ロール', value: '1d100<={SAN}' }));
+        baseArr.push(new SkillData({ type: 'elseRoll', name: '正気度ロール', value: '1d100<={SAN}' }));
       }
 
       // アイデア・幸運・知識
@@ -112,9 +110,9 @@ const rootApp = createApp({
         defStats.value.else.forEach((value, key) => {
           if (!value) return;
           if (key=='幸運' && !setting.value.is6th && setting.value.rollStyle!='@') {
-            baseArr.push(new SkillData({ id: id++, type: 'roll', name: '幸運', value: '{幸運}' }));
+            baseArr.push(new SkillData({ type: 'roll', name: '幸運', value: '{幸運}' }));
           } else {
-            baseArr.push(new SkillData({ id: id++, type: 'roll', name: key, value: value }));
+            baseArr.push(new SkillData({ type: 'roll', name: key, value: value }));
           }
         });
       }
@@ -127,7 +125,7 @@ const rootApp = createApp({
       // 倍数ロール
       if (chatTargets.value.get('ステ*5')) {
         if (defStats.value.params.entries().find((value, key) => value.value && !value.isExcluded && key!=='DB')) {
-          baseArr.push(new SkillData({ id: id++, type: 'line', value: setting.value.separator }));
+          baseArr.push(new SkillData({ type: 'line', value: setting.value.separator }));
         }
         
         defStats.value.params.forEach((dic, key) => {
@@ -135,7 +133,7 @@ const rootApp = createApp({
           if (!dic.value || dic.isExcluded) return;
           const end = setting.value.is6th ? '*5' : '';
           const value = setting.value.rollStyle=='@' ? dic.value * (setting.value.is6th?5:1) : `{${key}}${end}`;
-          baseArr.push(new SkillData({id: id++, type: 'roll', name: `${key}${end}`, value: value}));
+          baseArr.push(new SkillData({type: 'roll', name: `${key}${end}`, value: value}));
         });
       }
       
@@ -243,7 +241,7 @@ const rootApp = createApp({
       const dicePattern = `${b}(?:[-+*/]${b})*`;
 
       baseArr.forEach(base => {
-        const skillData = new SkillData({id: id++});
+        const skillData = new SkillData({});
 
         // 複数回ロール
         if (/^(?:x|rep|repeat)\d+/i.test(base)) {
@@ -401,9 +399,9 @@ const rootApp = createApp({
         const value = i===-1 ? null : Number.parseInt(unit.data.status.splice(i,1)[0].value);
         defStats.value.else.set(key, value);
       });
-      unit.data.params.forEach(param => exStats.value.params.push({id:id++, ...param}));
+      unit.data.params.forEach(param => exStats.value.params.push({...param}));
       unit.data.status.forEach(status => 
-        exStats.value.stats.push({id:id++, label:status.label, value:String(status.max ?? status.value)})
+        exStats.value.stats.push({label:status.label, value:String(status.max ?? status.value)})
       );
 
       // commands & idea/luck/know

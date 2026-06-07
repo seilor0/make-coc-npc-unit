@@ -132,7 +132,6 @@
                     </tr>
                     <tr 
                       v-for="(param, index) in exStats.params" 
-                      :key="param.id"
                       :draggable="true"
                       :class="{'is-dragging': index===dragIndex && dragTarget===exStats.params}"
                       @dragstart="dragStart(index, exStats.params)"
@@ -161,7 +160,6 @@
                     </tr>
                     <tr
                       v-for="(stat,index) in exStats.stats" 
-                      :key="stat.id"
                       :draggable="true"
                       :class="{'is-dragging': index===dragIndex && dragTarget===exStats.stats}"
                       @dragstart="dragStart(index, exStats.stats)"
@@ -191,7 +189,6 @@
                   <tbody>
                     <tr 
                       v-for="(dic,index) in skillList" 
-                      :key="dic.id"
                       :draggable="true"
                       :class="{'is-dragging': index===dragIndex && dragTarget===skillList}"
                       @dragstart="dragStart(index, skillList)"
@@ -200,7 +197,7 @@
                       @dragend="dragEnd"
                     >
                       <th :class="{'is-disabled' : dic.isNoname}" @click="dic.isNoname = !dic.isNoname">
-                        {{dic.times ? `x${dic.times} ` : ''}}{{dic.name}}
+                        {{dic.timesText}}{{dic.name}}
                       </th>
                       <td>{{dic.value}}</td>
                     </tr>
@@ -224,7 +221,7 @@
                   <tr 
                     v-for="(dic,index) in refChatList"
                     :draggable="true"
-                    :class="{'is-dragging': index === dragIndex && dragTarget===refChatList}"
+                    :class="{'is-dragging': index===dragIndex && dragTarget===refChatList}"
                     @dragstart="dragStart(index, refChatList)"
                     @dragenter="dragEnter(index, refChatList)"
                     @dragover.prevent
@@ -232,9 +229,7 @@
                   >
                     <td><input type="checkbox" v-model="dic.isExcluded"></td>
                     <td><input type="checkbox" v-model="dic.isSecret"></td>
-                    <td :class="{'is-disabled': dic.isExcluded}" @click="dic.isExcluded=!dic.isExcluded">
-                      {{dic.fullText}}
-                    </td>
+                    <td :class="{'is-disabled': dic.isExcluded}" @click="dic.isExcluded=!dic.isExcluded">{{dic.fullText}}</td>
                   </tr>
                   <tr v-for="val in Math.max(17 - refChatList.length, 0)">
                     <td></td>

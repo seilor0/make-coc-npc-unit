@@ -12,14 +12,12 @@
  */
 export class SkillData {
   constructor({
-    id = -1,
     type = '',
     name = '',
     value = '',
     times = null,
     isNoname = false,
   }={}) {
-    this.id = id;
     this.type = type;
     this.name = name;
     this.value = value;
@@ -50,7 +48,7 @@ export class SkillData {
   }
 
   createPaletteData (setting) {
-    const result = new PaletteData({times:this.times});
+    const result = new PaletteData({});
     
     if (
       this.type==='dice'     && setting.secretSingleDice     ||
