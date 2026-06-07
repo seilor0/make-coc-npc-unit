@@ -604,6 +604,46 @@ const rootApp = createApp({
       return unit;
     }
 
+    function exportTable (e) {
+      const resultArr = [];
+
+      defStats.value.params.forEach((dic, key) => {
+        if (dic.value && !dic.isExcluded) resultArr.push([key, dic.value]);
+      });
+      defStats.value.stats.forEach((dic, key) => {
+        if (dic.value && !dic.isExcluded) resultArr.push([key, dic.value]);
+      });
+      defStats.value.else.forEach((value, key) => {
+        if (!value) return;
+        switch (key) {
+          case 'アイデア':
+            if (value===defStats.value.params.get('INT')*(setting.value.is6th?5:1)) return;
+            break;
+          case '幸運':
+            if (value===defStats.value.params.get('POW')*5 && setting.value.is6th) return;
+            break;
+          case '知識':
+            if (value===defStats.value.params.get('EDU')*(setting.value.is6th?5:1)) return;
+            break;
+        }
+        resultArr.push([key, value]);
+      });
+      exStats.value.params.forEach(dic => {
+        if (dic.label && dic.value) resultArr.push([label, value]);
+      });
+      exStats.value.stats.forEach(dic => {
+        if (dic.label && dic.value) resultArr.push([label, value]);
+      });
+
+      const head      = '| ' + resultArr.map(([label, value])=>label).join(' | ') + ' |';
+      const separator = '|' + ' :-: |'.repeat(resultArr.length);
+      const content   = '| ' + resultArr.map(([label, value])=>value).join(' | ') + ' |';
+
+      const result = `${head}\n${separator}\n${content}`;
+      copy2clipboard(e.currentTarget, result);
+      return result;
+    }
+
     function getChatpalette () {
       return refChatList.value
         .filter(dic => !dic.isExcluded)
@@ -679,6 +719,7 @@ const rootApp = createApp({
 
       getChatpalette,
       exportUnit,
+      exportTable,
       copy2clipboard,
 
       dragIndex,

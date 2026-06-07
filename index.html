@@ -26,14 +26,12 @@
       <aside class="l-side-bar">
         <div class="l-side-bar__content">
           <h1>NPCコマ<br>作成ツール</h1>
-          <!-- <button class="round-button invert-el" command="show-modal" commandfor="modal-how2use">
-            このサイトについて
-          </button> -->
-          
+
           <button class="round-button invert-el invert" @click="exportUnit">
             <google-icon>move_item</google-icon>
             ココフォリアコマ出力
           </button>
+
           <button class="round-button invert-el invert" @click="copy2clipboard($event.currentTarget, getChatpalette())">
             <google-icon>move_item</google-icon>
             チャパレ出力
@@ -43,11 +41,13 @@
             <google-icon style="font-variation-settings: 'FILL' 1, 'opsz' 20;">settings</google-icon>
             チャパレ設定
           </button>
+
           <button class="round-button invert-el" command="show-modal" commandfor="unit-setting-dialog">
             <google-icon style="font-variation-settings: 'FILL' 1, 'opsz' 20;">settings</google-icon>
             コマ設定
           </button>
-          <button class="round-button invert-el" command="show-modal" commandfor="useful-dialog">
+
+          <button class="round-button invert-el" command="show-modal" commandfor="useful-dialog" @click.ctrl.shift.alt.prevent="exportTable">
             便利機能
           </button>
         </div>
@@ -297,10 +297,11 @@
               </table>
             </div>
           </div>
-          <pre style="text-align: center;margin-block-end: unset;white-space: pre-wrap;">
-    当サイトは、「株式会社アークライト」及び「株式会社KADOKAWA」が権利を有する『クトゥルフ神話TRPG』シリーズの二次創作物です。
-    Call of Cthulhu is copyright ©1981, 2015, 2019 by Chaosium Inc. ;all rights reserved. Arranged by Arclight Inc. Call of Cthulhu is a registered trademark of Chaosium Inc.
-    PUBLISHED BY KADOKAWA CORPORATION 「クトゥルフ神話TRPG」「新クトゥルフ神話TRPG」</pre>
+          <p style="text-align: center;margin-block-end: unset;white-space: pre-wrap;">
+            当サイトは、「株式会社アークライト」及び「株式会社KADOKAWA」が権利を有する『クトゥルフ神話TRPG』シリーズの二次創作物です。<br>
+            Call of Cthulhu is copyright ©1981, 2015, 2019 by Chaosium Inc. ;all rights reserved. Arranged by Arclight Inc. Call of Cthulhu is a registered trademark of Chaosium Inc.<br>
+            PUBLISHED BY KADOKAWA CORPORATION 「クトゥルフ神話TRPG」「新クトゥルフ神話TRPG」
+          </p>
         </footer>
       </div>
     </main>
