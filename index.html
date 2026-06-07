@@ -87,8 +87,8 @@
               </div>
               <span style="flex-grow: 1;"></span>
               <toggle-button :is-checked="setting.statusIsInvert" @checked-toggle="val=>{setting.statusIsInvert=val;updateDefStats();}">
-                <template #checked>    横テーブル</template>
-                <template #not-checked>横テーブル</template>
+                <template #checked>横テーブル</template>
+                <template #not-checked>平文</template>
               </toggle-button>
             </div>
             <textarea id="stats" @change="updateDefStats"></textarea>
@@ -250,7 +250,7 @@
                   <toggle-button :is-checked="value" @checked-toggle="val=>chatTargets.set(key, val)"></toggle-button>
                 </template>
                 <span></span>
-                <button class="invert-el shadow" style="grid-column: 1/-1;" @click="addSeparator">区切り線を追加</button>
+                <button class="invert-el shadow" style="grid-column: 1/-1;font-weight: 500;" @click="addSeparator">区切り線を追加</button>
               </div>
 
             </div>
