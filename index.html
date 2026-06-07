@@ -39,15 +39,15 @@
             チャパレ出力
           </button>
 
-          <button class="round-button invert-el" command="show-modal" commandfor="modal-dice-setting">
+          <button class="round-button invert-el" command="show-modal" commandfor="dice-setting-dialog">
             <google-icon style="font-variation-settings: 'FILL' 1, 'opsz' 20;">settings</google-icon>
             チャパレ設定
           </button>
-          <button class="round-button invert-el" command="show-modal" commandfor="modal-unit-setting">
+          <button class="round-button invert-el" command="show-modal" commandfor="unit-setting-dialog">
             <google-icon style="font-variation-settings: 'FILL' 1, 'opsz' 20;">settings</google-icon>
             コマ設定
           </button>
-          <button class="round-button invert-el" command="show-modal" commandfor="modal-useful">
+          <button class="round-button invert-el" command="show-modal" commandfor="useful-dialog">
             便利機能
           </button>
         </div>
@@ -59,7 +59,7 @@
           <section style="width: 23rem;">
             <hgroup style="margin-block-end: 1.5rem;">
               <h2 style="flex-grow: 1;">入力</h2>
-              <button class="invert-el shadow" command="show-modal" commandfor="modal-import-unit">
+              <button class="invert-el shadow" command="show-modal" commandfor="import-unit-dialog">
                 <google-icon>input</google-icon>
                 インポート
               </button>        
@@ -73,7 +73,7 @@
             <textarea id="name"></textarea>
     
             <!-- 能力値 -->
-            <div class="plane-title">
+            <div class="plane-title" style="display: flex;">
               能力値 etc.
               <div class="tips">
                 <google-icon>info</google-icon>
@@ -85,6 +85,11 @@
                   </ul>
                 </div>
               </div>
+              <span style="flex-grow: 1;"></span>
+              <toggle-button :is-checked="setting.statusIsInvert" @checked-toggle="val=>{setting.statusIsInvert=val;updateDefStats();}">
+                <template #checked>横テーブル</template>
+                <template #not-checked>平文</template>
+              </toggle-button>
             </div>
             <textarea id="stats" @change="updateDefStats"></textarea>
     
@@ -125,14 +130,13 @@
                     <button-css-icon icon-name="icon-minus" class="invert-el shadow" @click="deleteRow('params')"></button-css-icon>
                   </caption>
                   <tbody>
-                    <tr v-for="[key,dic] in defStats.params" :key="dic.id" :class="{'is-disabled': dic.del}" @click="dic.del=!dic.del">
-                      <td><input type="checkbox" v-model="dic.del"></td>
+                    <tr v-for="[key,dic] in defStats.params" :class="{'is-disabled': dic.isExcluded}" @click="dic.isExcluded=!dic.isExcluded">
+                      <td><input type="checkbox" v-model="dic.isExcluded"></td>
                       <th>{{key}}</th>
                       <td>{{dic.value}}</td>
                     </tr>
                     <tr 
                       v-for="(param, index) in exStats.params" 
-                      :key="param.id"
                       :draggable="true"
                       :class="{'is-dragging': index===dragIndex && dragTarget===exStats.params}"
                       @dragstart="dragStart(index, exStats.params)"
@@ -154,16 +158,15 @@
                     <button-css-icon icon-name="icon-minus" class="invert-el shadow" @click="deleteRow('stats')"></button-css-icon> 
                   </caption>
                   <tbody>
-                    <tr v-for="[key,dic] in defStats.stats" :key="dic.id" :class="{'is-disabled': dic.del}" @click="dic.del=!dic.del">
-                      <td><input type="checkbox" v-model="dic.del"></td>
+                    <tr v-for="[key,dic] in defStats.stats" :class="{'is-disabled': dic.isExcluded}" @click="dic.isExcluded=!dic.isExcluded">
+                      <td><input type="checkbox" v-model="dic.isExcluded"></td>
                       <th>{{key}}</th>
                       <td>{{dic.value}}</td>
                     </tr>
                     <tr
                       v-for="(stat,index) in exStats.stats" 
-                      :key="stat.id"
                       :draggable="true"
-                      :class="{'is-dragging': index === dragIndex && dragTarget===exStats.stats}"
+                      :class="{'is-dragging': index===dragIndex && dragTarget===exStats.stats}"
                       @dragstart="dragStart(index, exStats.stats)"
                       @dragenter="dragEnter(index, exStats.stats)"
                       @dragover.prevent
@@ -179,9 +182,9 @@
                 <table class="value-table">
                   <caption>他</caption>
                   <tbody>
-                    <tr v-for="[key,dic] in defStats.else" :key="dic.id">
+                    <tr v-for="[key, value] in defStats.else">
                       <th>{{key}}</th>
-                      <td>{{dic.value}}</td>
+                      <td>{{value}}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -191,16 +194,15 @@
                   <tbody>
                     <tr 
                       v-for="(dic,index) in skillList" 
-                      :key="dic.id"
                       :draggable="true"
-                      :class="{'is-dragging': index === dragIndex && dragTarget===skillList}"
+                      :class="{'is-dragging': index===dragIndex && dragTarget===skillList}"
                       @dragstart="dragStart(index, skillList)"
                       @dragenter="dragEnter(index, skillList)"
                       @dragover.prevent
                       @dragend="dragEnd"
                     >
-                      <th :class="{'is-disabled' : dic.noname}" @click="dic.noname = !dic.noname">
-                        {{dic.times ? `x${dic.times} ` : ''}}{{dic.name}}
+                      <th :class="{'is-disabled' : dic.isNoname}" @click="dic.isNoname = !dic.isNoname">
+                        {{dic.timesText}}{{dic.name}}
                       </th>
                       <td>{{dic.value}}</td>
                     </tr>
@@ -224,19 +226,17 @@
                   <tr 
                     v-for="(dic,index) in refChatList"
                     :draggable="true"
-                    :class="{'is-dragging': index === dragIndex && dragTarget===refChatList}"
+                    :class="{'is-dragging': index===dragIndex && dragTarget===refChatList}"
                     @dragstart="dragStart(index, refChatList)"
                     @dragenter="dragEnter(index, refChatList)"
                     @dragover.prevent
                     @dragend="dragEnd"
                   >
-                    <td><input type="checkbox" v-model="dic.del"></td>
-                    <td><input type="checkbox" v-model="dic.secret"></td>
-                    <td :class="{'is-disabled': dic.del}" @click="dic.del=!dic.del">
-                      {{dic.times}}{{dic.secret ? 's' : ''}}{{dic.text}}
-                    </td>
+                    <td><input type="checkbox" v-model="dic.isExcluded"></td>
+                    <td><input type="checkbox" v-model="dic.isSecret"></td>
+                    <td :class="{'is-disabled': dic.isExcluded}" @click="dic.isExcluded=!dic.isExcluded">{{dic.fullText}}</td>
                   </tr>
-                  <tr v-for="val in fillLength_chat">
+                  <tr v-for="val in Math.max(17 - refChatList.length, 0)">
                     <td></td>
                     <td></td>
                     <td></td>
@@ -245,12 +245,14 @@
               </table>
     
               <div class="setting-div" style="font-size: 0.9rem;column-gap: 0.75rem;margin-block: 0.25rem 0;margin-inline-start: -1rem;">
-                <template v-for="data in chatTargets" :key="data.id">
-                  <span>{{data.label}}</span>
-                  <toggle-button :is-checked = "data.value" @checked-toggle = "val=>data.value=val"></toggle-button>
+                <template v-for="[key, value] in chatTargets">
+                  <span>{{key}}</span>
+                  <toggle-button :is-checked="value" @checked-toggle="val=>chatTargets.set(key, val)"></toggle-button>
                 </template>
+                <span></span>
+                <button class="invert-el shadow" style="grid-column: 1/-1;font-weight: 500;" @click="addSeparator">区切り線を追加</button>
               </div>
-    
+
             </div>
           </section>
         </div>
@@ -305,20 +307,8 @@
       </div>
     </main>
 
-    <basic-dialog id="modal-how2use">
-      <template #header>このサイトについて</template>
-      <template #content>
-        <p>
-          CoC6版 / 7版のココフォリア用の<br>
-          キャラコマを作れるサイトです。<br>
-        </p>
-        <p>
-          入力の手数を極力省くことを目的に作りました。
-        </p>
-      </template>
-    </basic-dialog>
 
-    <basic-dialog id="modal-useful">
+    <basic-dialog id="useful-dialog">
       <template #header>便利機能</template>
       <template #content>
         <div>
@@ -358,7 +348,7 @@
       </template>
     </basic-dialog>
 
-    <basic-dialog id="modal-dice-setting">
+    <basic-dialog id="dice-setting-dialog">
       <template #header>チャパレ設定</template>
       <template #content>
         <div class="setting-div" style="width: 22rem;">
@@ -396,10 +386,19 @@
             </toggle-button>
           </div>
         </div>
+          
+        <hr>
+
+        <div class="setting-div">
+          <span>区切り線</span>
+          <input type="text" v-model="setting.separator">
+          <span>【技能名】</span>
+          <input id="skill-bracket" type="text" maxlength="2" @change="setBracket">
+        </div>
       </template>
     </basic-dialog>
 
-    <basic-dialog id="modal-unit-setting" section-style="max-width: 22rem;">
+    <basic-dialog id="unit-setting-dialog" section-style="max-width: 22rem;">
       <template #header>キャラコマ設定</template>
       <template #content>
         <div class="setting-div">
@@ -438,7 +437,7 @@
       </template>
     </basic-dialog>
 
-    <basic-dialog id="modal-import-unit">
+    <basic-dialog id="import-unit-dialog">
       <template #header>ココフォリアコマをインポート</template>
       <template #content>
         <textarea style="width: 20rem;max-height: 20rem;min-height: 6rem;" placeholder="コマを貼り付け" @change="importUnit"></textarea>
@@ -450,7 +449,7 @@
     </basic-dialog> 
   </div>
   
-  <script type="module" src="./code_vue.js"></script>
+  <script type="module" src="./code-vue.js"></script>
 </body>
 
 </html>
