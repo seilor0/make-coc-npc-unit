@@ -249,6 +249,8 @@
                   <span>{{key}}</span>
                   <toggle-button :is-checked="value" @checked-toggle="val=>chatTargets.set(key, val)"></toggle-button>
                 </template>
+                <span></span>
+                <button class="invert-el shadow" style="grid-column: 1/-1;" @click="addSeparator">区切り線を追加</button>
               </div>
 
             </div>
@@ -385,7 +387,7 @@
           </div>
 
           <span>区切り線</span>
-          <input type="text" v-model="setting.separateLine">
+          <input type="text" v-model="setting.separator">
         </div>
       </template>
     </basic-dialog>

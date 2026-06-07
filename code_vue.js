@@ -34,7 +34,7 @@ const rootApp = createApp({
       "unitSize": 4,
       "faces": [],
       "delChar": " …「」『』【】〈〉《》≪≫",
-      "separateLine": "===========",
+      "separator": "===========",
       "importUnitSetting": true
     });
 
@@ -95,7 +95,7 @@ const rootApp = createApp({
         setting.value.faces.forEach(face => 
           baseArr.push(new SkillData({ id: id++, type: 'line', value: face }))
         );
-        baseArr.push(new SkillData({ id: id++, type: 'line', value: setting.value.separateLine }));
+        baseArr.push(new SkillData({ id: id++, type: 'line', value: setting.value.separator }));
       }
 
       // 正気度ロール
@@ -127,7 +127,7 @@ const rootApp = createApp({
       // 倍数ロール
       if (chatTargets.value.get('ステ*5')) {
         if (defStats.value.params.entries().find((value, key) => value.value && !value.isExcluded && key!=='DB')) {
-          baseArr.push(new SkillData({ id: id++, type: 'line', value: setting.value.separateLine }));
+          baseArr.push(new SkillData({ id: id++, type: 'line', value: setting.value.separator }));
         }
         
         defStats.value.params.forEach((dic, key) => {
@@ -144,6 +144,9 @@ const rootApp = createApp({
     });
     watch(chatList, () => refChatList.value = chatList.value);
 
+    function addSeparator () {
+      refChatList.value.push(new PaletteData({text: setting.value.separator}))
+    }
 
     function updateDefStats () {
       // status欄のテキストを取得・整形
@@ -533,6 +536,7 @@ const rootApp = createApp({
       addRow,
       deleteRow,
 
+      addSeparator,
       updateDefStats,
       updateSkillList,
       clear,
