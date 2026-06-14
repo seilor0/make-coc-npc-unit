@@ -8,7 +8,7 @@
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300..700" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..24,200..400,0..1,0&icon_names=info,input,move_item,settings" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..24,200..400,0..1,0&icon_names=drag_indicator,info,input,move_item,settings" />
   
   <link rel="stylesheet" href="./css/-base.css" />
   <link rel="stylesheet" href="./css/basic-dialog.css" />
@@ -37,10 +37,10 @@
             チャパレ出力
           </button>
 
-          <button class="round-button invert-el" command="show-modal" commandfor="dice-setting-dialog">
+          <!-- <button class="round-button invert-el" command="show-modal" commandfor="dice-setting-dialog">
             <google-icon style="font-variation-settings: 'FILL' 1, 'opsz' 20;">settings</google-icon>
             チャパレ設定
-          </button>
+          </button> -->
 
           <button class="round-button invert-el" command="show-modal" commandfor="unit-setting-dialog">
             <google-icon style="font-variation-settings: 'FILL' 1, 'opsz' 20;">settings</google-icon>
@@ -225,7 +225,14 @@
                   <tr>
                     <th>✕</th>
                     <th>s</th>
-                    <th>chat palette</th>
+                    <th>
+                      <span style="display: flex;align-items: center;gap: 6px;">
+                        chat palette
+                        <button class="material-symbols-outlined edit-button" command="show-modal" commandfor="dice-setting-dialog">
+                          settings
+                        </button>
+                      </span>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
