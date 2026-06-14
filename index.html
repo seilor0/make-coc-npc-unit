@@ -67,13 +67,13 @@
             </hgroup>
     
             <!-- 名前欄 -->
-            <div class="plane-title" style="margin-block-start: 0;">
+            <div class="plain-title" style="margin-block-start: 0;">
               名前/メモ欄
             </div>
             <textarea id="name"></textarea>
     
             <!-- 能力値 -->
-            <div class="plane-title" style="display: flex;">
+            <div class="plain-title" style="display: flex;">
               能力値 etc.
               <div class="tips">
                 <google-icon>info</google-icon>
@@ -86,15 +86,21 @@
                 </div>
               </div>
               <span style="flex-grow: 1;"></span>
-              <toggle-button :is-checked="setting.statusIsInvert" @checked-toggle="val=>{setting.statusIsInvert=val;updateDefStats();}">
-                <template #checked>横テーブル</template>
-                <template #not-checked>平文</template>
-              </toggle-button>
+              <div class="pill-tab-wrapper">
+                <label>
+                  <input type="radio" name="is-invert" v-model="setting.statusIsInvert" :value="true">
+                  横テーブル
+                </label>
+                <label>
+                  <input type="radio" name="is-invert" v-model="setting.statusIsInvert" :value="false">
+                  平文
+                </label>
+              </div>
             </div>
             <textarea id="stats" @change="updateDefStats"></textarea>
     
             <!-- 技能・ダイス・choice -->
-            <div class="plane-title">
+            <div class="plain-title">
               技能・ダイス etc.
               <div class="tips">
                 <google-icon>info</google-icon>
@@ -352,17 +358,24 @@
       <template #content>
         <div class="setting-div" style="width: 22rem;">
           <span>システム</span>
-          <toggle-button :top-is-slider="true" :is-checked="setting.is6th" @checked-toggle="value => setting.is6th=value">
-            <template #checked>CoC6th</template>
-            <template #not-checked>CoC7th</template>
-          </toggle-button>
+          <div class="pill-tab-wrapper" style="width: 60%;">
+            <label>
+              <input type="radio" name="is-6th" v-model="setting.is6th" :value="true">
+              CoC6th
+            </label>
+            <label>
+              <input type="radio" name="is-6th" v-model="setting.is6th" :value="false">
+              7th
+            </label>
+          </div>
 
           <span>判定ダイス</span>
-          <select v-model="setting.dice">
-            <option value="CC">CC</option>
-            <option value="CCB">CCB</option>
-            <option value="1d100">1d100</option>
-          </select>
+          <div class="pill-tab-wrapper" style="width: 60%;">
+            <label v-for="key in ['CC','CCB','1d100']">
+              <input type="radio" name="dice-type" v-model="setting.dice" :value="key">
+              {{key}}
+            </label>
+          </div>
 
           <span>形式</span>
           <select v-model="setting.rollStyle">

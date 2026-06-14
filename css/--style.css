@@ -13,10 +13,9 @@
   .tips > & {
     font-variation-settings:'wght' 400;
     opacity: 0.33;
-    padding-inline-start: 0.25rem;
     position: absolute;
     user-select: none;
-    font-size: 1.375em;
+    font-size: calc(1.25em + 2px);
     align-self: end;
   }
 }
@@ -281,6 +280,26 @@
       white-space: nowrap;
     }
   }
+
+  .pill-tab-wrapper {
+    --line-color: var(--light-blue);
+    --active-back-color: var(--blue-gradient);
+    color: var(--light-blue);
+    font-size: small;
+
+    > * {
+      padding: 0.25em 0.5em;
+    }
+    > :first-child {
+      padding-inline-start: 0.75em;
+    }
+    > :last-child {
+      padding-inline-end: 0.75em;
+    }
+    > :has(:checked) {
+      font-weight: 600;
+    }
+  }
 }
 
 
@@ -339,9 +358,11 @@
     padding-inline: 0.5ch;
   }
   
-  .plane-title {
+  .plain-title {
     font-weight: 500;
     margin-block: 1rem 0.5rem;
+    display: flex;
+    align-items: center;
     user-select: none;
   }
   
@@ -354,8 +375,11 @@
   
   .tips {
     display: inline;
-    position: relative;
     font-weight: normal;
+    padding-inline-start: 0.25rem;
+    width: 1.25em;
+    height: 1.25em;
+    position: relative;
   
     > div:last-child { 
       background-color: rgb(255 255 255 /0.97);
