@@ -335,7 +335,7 @@ const rootApp = createApp({
         defStats.value.else.set('知識', defStats.value.params.get('EDU').value * (setting.value.is6th ? 5 : 1));
       }
     }
-    watch(()=>setting.value.statusIsInvert, ()=>updateDefStats());
+    watch(()=>setting.value.statusIsInvert, updateDefStats);
 
     function updateSkillList () {
       skillList.value.splice(0);
