@@ -40,6 +40,17 @@
   }
 }
 
+.material-symbols-outlined.is-hover {
+  font-variation-settings: 'wght' 300;
+  opacity: 0.4;
+  position: absolute;
+  right: 100%;
+  tr:not(:hover, .is-dragging) & {display: none;}
+}
+:is(th,td):has([type=text], [type=number]) .material-symbols-outlined.is-hover {
+  right: calc(100% - 4px);
+}
+
 
 
 /* ---------------------- */
@@ -241,6 +252,23 @@
   .icon {
     --size: 0.75rem;
     --line-radius: 1.5px;
+  }
+
+  tr:not(:hover) .icon.is-hover {
+    display: none;
+  }
+  #chat-table {
+    .icon.is-hover {
+      flex-grow: 0;
+      --size: 1em;
+      padding-inline: 4px;
+    }
+    .icon-plus {
+      color: var(--sky-blue);
+    }
+    .icon-minus {
+      color: darkgray;
+    }
   }
   
   .toggle-button {
@@ -525,23 +553,14 @@
     th {width: 8ch;}
     td {width: 7ch;}
   }
-  
-  .secret-table {
-    --indent: 1rem;
-    margin-inline-start: calc(-1*var(--indent));
-    caption {margin-inline-start: var(--indent);}
-  
-    tbody {cursor: pointer;}
-  
-    thead :is(th,td):nth-child(2) {border-start-start-radius: 0.25rem;}
-  
-    :is(th,td):first-child {
-      background-color: transparent !important;
-      border-style: none;
-      padding: 0;
-      width: var(--indent);
-      visibility: hidden;
-      :hover > & {visibility: visible;}
-    }
+
+  .cell-wrap {
+    display: flex;
+    align-items: center;
+    width: stretch;
+    height: stretch;
+    gap: 4px;
+    position: relative;
+    > :last-child {flex-grow: 1;}
   }
 }

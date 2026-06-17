@@ -130,7 +130,7 @@
             <div class="l-output-div">
               <div class="l-output-l">
     
-                <table class="value-table secret-table" style="grid-row: 1 / 3;">
+                <table class="value-table" style="grid-row: 1 / 3;">
                   <caption>
                     パラメータ
                     <button-css-icon icon-name="icon-plus" class="invert-el shadow" @click="addRow('params')"></button-css-icon>
@@ -138,7 +138,6 @@
                   </caption>
                   <tbody>
                     <tr v-for="[key,dic] in defStats.params" :class="{'is-disabled': dic.isExcluded}" @click="dic.isExcluded=!dic.isExcluded">
-                      <td><input type="checkbox" v-model="dic.isExcluded"></td>
                       <th>{{key}}</th>
                       <td>{{dic.value}}</td>
                     </tr>
@@ -151,14 +150,18 @@
                       @dragover.prevent
                       @dragend="dragEnd"
                     >
-                      <td></td>
-                      <th><input type="text" v-model="param.label"/></th>
-                      <td><input type="text" v-model="param.value"/></td>
+                      <th>
+                        <span class="cell-wrap">
+                          <google-icon class="is-hover">drag_indicator</google-icon>
+                          <input type="text" v-model="param.label" style="width: 8ch;">
+                        </span>
+                      </th>
+                      <td><input type="text" v-model="param.value"></td>
                     </tr>
                   </tbody>
                 </table>
     
-                <table class="value-table secret-table">
+                <table class="value-table">
                   <caption>
                     ステータス
                     <button-css-icon icon-name="icon-plus" class="invert-el shadow" @click="addRow('stats')"></button-css-icon>
@@ -166,7 +169,6 @@
                   </caption>
                   <tbody>
                     <tr v-for="[key,dic] in defStats.stats" :class="{'is-disabled': dic.isExcluded}" @click="dic.isExcluded=!dic.isExcluded">
-                      <td><input type="checkbox" v-model="dic.isExcluded"></td>
                       <th>{{key}}</th>
                       <td>{{dic.value}}</td>
                     </tr>
@@ -179,9 +181,13 @@
                       @dragover.prevent
                       @dragend="dragEnd"
                     >
-                      <td></td>
-                      <th><input type="text" v-model="stat.label"/></th>
-                      <td><input type="text" v-model="stat.value"/></td>
+                      <th>
+                        <span class="cell-wrap">
+                          <google-icon class="is-hover">drag_indicator</google-icon>
+                          <input type="text" v-model="stat.label" style="width: 8ch;">
+                        </span>
+                      </th>
+                      <td><input type="text" v-model="stat.value"></td>
                     </tr>
                   </tbody>
                 </table>
@@ -209,7 +215,10 @@
                       @dragend="dragEnd"
                     >
                       <th :class="{'is-disabled' : dic.isNoname}" @click="dic.isNoname = !dic.isNoname">
-                        {{dic.timesText}}{{dic.name}}
+                        <span class="cell-wrap">
+                          <google-icon class="is-hover">drag_indicator</google-icon>
+                          <span>{{dic.timesText}}{{dic.name}}</span>
+                        </span>
                       </th>
                       <td>{{dic.value}}</td>
                     </tr>
@@ -221,10 +230,9 @@
                 </table>
               </div>
     
-              <table id="chat-table" class="secret-table">
+              <table id="chat-table">
                 <thead>
                   <tr>
-                    <th>✕</th>
                     <th>s</th>
                     <th>
                       <span style="display: flex;align-items: center;gap: 6px;">
@@ -246,12 +254,23 @@
                     @dragover.prevent
                     @dragend="dragEnd"
                   >
-                    <td><input type="checkbox" v-model="dic.isExcluded"></td>
-                    <td><input type="checkbox" v-model="dic.isSecret"></td>
-                    <td :class="{'is-disabled': dic.isExcluded}" @click="dic.isExcluded=!dic.isExcluded">{{dic.fullText}}</td>
+                    <td>
+                      <span class="cell-wrap">
+                        <google-icon class="is-hover">drag_indicator</google-icon>
+                        <input type="checkbox" v-model="dic.isSecret">
+                      </span>
+                    </td>
+                    <td @click="dic.isExcluded=!dic.isExcluded">
+                      <span class="cell-wrap">
+                        <span :class="{'is-disabled': dic.isExcluded}" style="flex-grow: 1;">
+                          {{dic.fullText}}
+                        </span>
+                        <div class="icon is-hover" :class="{'icon-minus': !dic.isExcluded, 'icon-plus': dic.isExcluded}" style="flex-grow: 0;"></div>
+                      </span>
+                      
+                    </td>
                   </tr>
                   <tr v-for="val in Math.max(17 - refChatList.length, 0)">
-                    <td></td>
                     <td></td>
                     <td></td>
                   </tr>
