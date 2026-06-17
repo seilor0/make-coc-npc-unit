@@ -1,0 +1,60 @@
+@layer component {
+  .segmented-control {
+    display: inline-flex;
+    align-items: center;
+    text-align: center;
+    
+    width: fit-content;
+    height: fit-content;
+    min-width: fit-content;
+    white-space: nowrap;
+    user-select: none;
+    overflow: clip;
+
+    > * {
+      height: stretch;
+      align-content: center;
+      flex-grow: 1;
+    }
+    input[type=checkbox],
+    input[type=radio] {
+      display: none;
+    }
+  }
+
+  .segmented-control.outline {
+    --line-color: gray;
+    border: 1px solid var(--line-color);
+    > :first-child ~ * {
+      border-inline-start: 1px solid var(--line-color);
+    }
+  }
+  
+  .segmented-control.filled {
+    color: hsl(0 0% 70%);
+    background-color: hsl(0 0 90%);
+    box-shadow: inset 0px 0px 4px 0px rgb(0 0 0 / 10%);
+
+    /* padding: 6px; */
+    /* border-radius: 10px; */
+
+    > * {
+      /* padding: 6px 12px; */
+      /* border-radius: 8px; */
+      border: 1px solid transparent;
+    }
+    > :has(:checked) {
+      color: hsl(0 0% 45%);
+      background: rgb(255 255 255 /0.8);
+      box-shadow: 0 0 2px 1px rgb(0 0 0 / 10%);
+      border-color: white;
+    }
+  }
+  
+  .segmented-control.pill {
+    border-radius: 10rem;
+    --inline-padding: 1em;
+    > :first-child {padding-inline-start: var(--inline-padding);}
+    > :last-child  {padding-inline-end:   var(--inline-padding);}
+  }
+}

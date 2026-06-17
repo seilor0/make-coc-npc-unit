@@ -272,22 +272,19 @@
     }
   }
 
-  .pill-tab-wrapper {
+  .segmented-control.outline.pill {
     --line-color: var(--light-blue);
-    --active-back-color: var(--blue-gradient);
+    --inline-padding: 0.75em;
+
     color: var(--light-blue);
     font-size: small;
 
     > * {
       padding: 0.25em 0.5em;
     }
-    > :first-child {
-      padding-inline-start: 0.75em;
-    }
-    > :last-child {
-      padding-inline-end: 0.75em;
-    }
     > :has(:checked) {
+      color: white;
+      background: var(--blue-gradient);
       font-weight: 600;
     }
   }

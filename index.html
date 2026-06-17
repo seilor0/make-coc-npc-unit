@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="./css/-base.css" />
   <link rel="stylesheet" href="./css/basic-dialog.css" />
   <link rel="stylesheet" href="./css/css-icon.css" />
+  <link rel="stylesheet" href="./css/segmented-control.css" />
   <link rel="stylesheet" href="./css/toggle-button.css" />
   <link rel="stylesheet" href="./css/--style.css" />
   
@@ -86,7 +87,7 @@
                 </div>
               </div>
               <span style="flex-grow: 1;"></span>
-              <div class="pill-tab-wrapper">
+              <div class="segmented-control outline pill">
                 <label>
                   <input type="radio" name="is-invert" v-model="setting.statusIsInvert" :value="true">
                   横テーブル
@@ -365,7 +366,7 @@
       <template #content>
         <div class="setting-div" style="width: 22rem;">
           <span>システム</span>
-          <div class="pill-tab-wrapper" style="width: 60%;">
+          <div class="segmented-control outline pill" style="width: 60%;">
             <label>
               <input type="radio" name="is-6th" v-model="setting.is6th" :value="true">
               CoC6th
@@ -377,7 +378,7 @@
           </div>
 
           <span>判定ダイス</span>
-          <div class="pill-tab-wrapper" style="width: 60%;">
+          <div class="segmented-control outline pill" style="width: 60%;">
             <label v-for="key in ['CC','CCB','1d100']">
               <input type="radio" name="dice-type" v-model="setting.dice" :value="key">
               {{key}}
