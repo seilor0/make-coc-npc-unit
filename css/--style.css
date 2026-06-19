@@ -89,6 +89,7 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
+    margin-block-end: 1.5rem;
   }
   
   pre {
@@ -175,6 +176,12 @@
 /* ---------------------- */
 /* imported */
 @layer layout {
+  main {
+    flex-direction: column;
+  }
+}
+
+@layer layout {
   .l-side-bar__content {
     padding: 1.5rem 2.5rem;
     width: 16rem;
@@ -194,17 +201,11 @@
 
 /* project */
 @layer layout {
-  .l-main-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-
   .l-content {
     padding: 2.5rem 5rem;
     padding-block-end: 1.5rem;
     display: flex;
-    gap: 2rem;
+    gap: 5rem;
     flex-grow: 1;
   
     @media (max-width:600px) {
@@ -231,6 +232,25 @@
     align-items: start;
     gap: 1rem;
     height: max-content;
+  }
+
+  .l-float-ribbon {
+    border-radius: 2rem;
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+    corner-shape: squircle;
+    background-color: var(--sky-blue);
+
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    justify-content: center;
+
+    position: fixed;
+    right: -5px;
+    bottom: 100px;
+
+    padding: 1rem 1.5rem;
   }
 
   #useful-dialog section {
@@ -300,7 +320,7 @@
     }
   }
 
-  .segmented-control.outline.pill {
+  .segmented-control.outline {
     --line-color: var(--light-blue);
     --inline-padding: 0.75em;
 
@@ -314,6 +334,18 @@
       color: white;
       background: var(--blue-gradient);
       font-weight: 600;
+    }
+  }
+  .segmented-control.filled {
+    padding: 6px;
+    border-radius: 10px;
+    font-weight: 600;
+    > * {
+      padding: 3px 8px;
+      border-radius: 8px;
+    }
+    > :has(:checked) {
+      color: darkslategray;
     }
   }
   
@@ -370,8 +402,8 @@
   
   .triangle {
     background-color: hsl(from lightslategray h s l /33%);
-    align-self: center;
-    height: 1.25rem;
+    /* align-self: center; */
+    height: 1rem;
     aspect-ratio: cos(30deg);
     clip-path: polygon(0 0,100% 50%,0 100%);
     @media (max-width:600px) {
@@ -536,7 +568,7 @@
   
   #chat-table {
     height: fit-content;
-    tr > :nth-child(2) {width: 1rem}
+    /* tr > :nth-child(2) {width: 1rem} */
     thead th:last-child {padding-inline: 8ch}
     thead {
       color: white;
