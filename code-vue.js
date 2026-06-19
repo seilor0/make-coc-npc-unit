@@ -40,9 +40,9 @@ const rootApp = createApp({
     });
 
     const chatTargets = ref(new Map([
-      ['差分', true],
+      ['差分', false],
       ['SANc', false],
-      ['知識etc.', true],
+      ['知識etc.', false],
       ['技能', true],
       ['ステ*5', true],
     ]));
