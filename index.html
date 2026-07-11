@@ -271,44 +271,37 @@
                 </tbody>
               </table>
             </div>
-  
-            <table id="chat-table">
-              <thead>
-                <tr>
-                  <th>
-                    <span style="display: inline-flex;align-items: center;gap: 6px;white-space: nowrap;padding-inline-start: 1.25rem;">
-                      chat palette
-                      <button class="material-symbols-outlined edit-button" command="show-modal" commandfor="dice-setting-dialog">
-                        settings
-                      </button>
-                    </span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(dic,index) in refChatList"
-                  :draggable="true"
-                  :class="{'is-dragging': index===dragIndex && dragTarget===refChatList}"
-                  @dragstart="dragStart(index, refChatList)"
-                  @dragenter="dragEnter(index, refChatList)"
-                  @dragover.prevent
-                  @dragend="dragEnd"
-                >
-                  <td @click="dic.isExcluded=!dic.isExcluded">
-                    <span class="cell-wrap">
-                      <google-icon class="is-hover">drag_indicator</google-icon>
-                      <input type="checkbox" v-model="dic.isSecret" @click.stop>
-                      <span :class="{'is-disabled': dic.isExcluded}" style="flex-grow: 1;">
-                        {{dic.fullText}}
-                      </span>
-                      <div class="icon is-hover" :class="{'icon-minus': !dic.isExcluded, 'icon-plus': dic.isExcluded}" style="flex-grow: 0;"></div>
-                    </span>
-                  </td>
-                </tr>
-                <tr v-for="val in Math.max(17 - refChatList.length, 0)"><td></td></tr>
-              </tbody>
-            </table>
-  
+
+            <div class="chat-table">
+              <div class="chat-table__head">
+                chat palette
+                <button class="material-symbols-outlined edit-button" command="show-modal" commandfor="dice-setting-dialog">
+                  settings
+                </button>
+              </div>
+              <div v-for="(dic, index) in refChatList"
+                class="chat-table__body"
+                :class="{
+                  'is-disabled': dic.isExcluded, 
+                  'is-dragging': index===dragIndex && dragTarget===refChatList
+                }"
+                :draggable="true"
+                @dragstart="dragStart(index, refChatList)"
+                @dragenter="dragEnter(index, refChatList)"
+                @dragover.prevent
+                @dragend="dragEnd"
+              >
+                <button-tag class="secret-flag" :is-checked="dic.isSecret" @checked-toggle="val=>dic.isSecret=val">
+                  <template #checked>s</template>
+                  <template #not-checked>-</template>
+                </button-tag>
+                <span class="chat-text">{{dic.timesText}}{{dic.text}}</span>
+                <div class="icon excluded-flag" :class="{'icon-minus': !dic.isExcluded, 'icon-plus': dic.isExcluded}" @click="dic.isExcluded=!dic.isExcluded"></div>
+                <google-icon class="drag-handle">drag_handle</google-icon>
+              </div>
+              <div v-for="val in Math.max(15 - refChatList.length, 0)" class="chat-table__body"></div>
+            </div>
+
             <div class="setting-div" style="font-size: 0.9rem;column-gap: 0.75rem;margin-block: 0.25rem 0;margin-inline-start: -1rem;">
               <template v-for="[key, value] in chatTargets">
                 <span>{{key}}</span>
